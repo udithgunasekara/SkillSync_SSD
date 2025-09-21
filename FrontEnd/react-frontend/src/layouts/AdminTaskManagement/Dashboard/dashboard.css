@@ -1,0 +1,42 @@
+.header{
+    background-image: url("../../../images/header1.png");
+    opacity: var(--mainOpacity);
+    height: 20em !important;
+}
+/* color scheme */
+.main-color {
+    background-color: #641C9E ;
+    }
+    
+.background-color {
+     background-color: #E8DAF2 ;
+}
+    
+.text-color {
+    color: #1D0233 ;
+}
+    
+.error-color {
+    color: #E36868 ;
+}
+.warning-color {
+    color: #E38D68 ;
+}
+.positive-color {
+    background-color: #68DC65 ;
+    
+}
+.nutral-color {
+    color: #68A1E3 ;
+}
+
+.text-dark{
+    font-weight: bold;
+}
+
+
+/* .card-img-top{
+    background-image: url("../../images/header2.jpg");
+    height: 20em !important;
+} */
+

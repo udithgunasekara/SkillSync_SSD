@@ -1,0 +1,75 @@
+
+#supportnavbar{
+  padding: 2px 0px 2px 0px ;
+}
+#supportnavbar .login-button{
+
+  background-color: greenyellow;
+  color: black;
+  font-size: 16px;
+  padding: 4px 20px;
+  border-radius: 20px;
+  text-decoration: none;
+  transition: 0.3s background-color;
+  margin-right: 5px;
+  font-weight: bold;
+
+}
+
+#supportnavbar .login-button:hover{
+  background-color: #00b383;
+}
+
+#supportnavbar .navbar-toggler{
+  border: none;
+  margin-left: 5px;
+  font-size: 1.25rem;
+
+}
+
+#supportnavbar .nav-link{
+  font-size: 18px;
+}
+
+#supportnavbar .navbar-toggler:focus, #supportnavbar .btn-close:focus{
+  box-shadow:none;
+  outline:none;
+}
+#supportnavbar .nav-link:hover{
+  color: rgb(255, 255, 255);
+  background-color:#BE83ED;
+  transition: 0.5s ease-in-out;
+  border-radius: 2px;
+}
+
+
+@media(min-width:991px) {
+
+  
+  
+  #supportnavbar .nav-link:hover::before,.nav-link.active::before{
+    width: 100%;
+    visibility: visible;
+  }
+  
+  #supportnavbar .navbar-brand{
+    font-size: 18px;
+    font-weight: bold;
+    color: black;
+    background-color: white;
+    border-radius: 20px;
+    padding:  4px 14px 3px 5px;
+  }
+}
+
+#supportnavbar .navbar-nav .nav-link.active {
+  background-color: rgb(255, 255, 255) !important;
+  color: black !important;
+  border-radius: 4px;
+  transition: 1s;;
+}
+
+#supportnavbar .nav-link.clicked {
+  background-color: white !important;
+  color: black !important;
+}

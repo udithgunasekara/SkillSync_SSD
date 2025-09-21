@@ -1,0 +1,79 @@
+.app_container {
+  background-color: #f3f2f8;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.app_header {
+  color: #5a4e77;
+}
+
+.app_input {
+  border-radius: 15px;
+  border: 2px solid #ac69e2;
+}
+
+.app_button {
+  background-color: #ac69e2;
+  border: none;
+  border-radius: 15px;
+  color: white;
+}
+
+.app_card_container {
+  gap: 10px;
+}
+
+.app_card {
+  background-color: #ebd9f9;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.card_body {
+  align-items: center;
+  padding: 10px;
+}
+
+.app_avatar {
+  background-color: #ffffff;
+  border-radius: 50%;
+  padding: 10px;
+}
+
+.app_avatar img {
+  width: 50px;
+  height: 50px;
+}
+
+.app_info {
+  flex: 1;
+  margin-right: 15px;
+}
+
+.app_title {
+  color: #26203b;
+  font-size: 1.1em;
+}
+
+.app_details {
+  color: #004d40;
+  font-size: 0.9em;
+}
+
+.app_review_link {
+  background-color: #465ff1;
+  color: white;
+  padding: 8px 15px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.app_review_link:hover {
+  background-color: #3447c4;
+}
+
+.app_no_results {
+  color: #888;
+  font-size: 1em;
+}

@@ -1,0 +1,16 @@
+package BackEnd.DTO;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class OptionDTO {
+    private Long optionId;
+    private String optionTxt;
+    private Long questionId;
+}

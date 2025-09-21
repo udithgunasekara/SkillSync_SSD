@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>notices</title>
+</head>
+<body>
+<p>this is a paragraph</p>
+<table>
+
+    <thead>
+    <tr>
+        <th>Actions</th>
+        <th>Notice Title</th>
+        <th>Notice Description</th>
+        <th>Notice audience</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="notice:${notices}">
+        <td th:text="${notice.id}"></td>
+        <td th:text="${notice.title}"></td>
+        <td th:text="${notice.description}"></td>
+        <td th:text="${notice.audience}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

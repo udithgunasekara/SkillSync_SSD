@@ -1,0 +1,57 @@
+.ticket-background {
+    width: 80%; /* Adjust width as needed */
+    height: max-content; /* Adjust height as needed */
+    padding: 15px 0;
+    background-color: #0b8efa; /* Background color of the rectangle */
+    border-radius: 10px; /* Adjust border radius for rounded corners */
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.575); /* Horizontal offset, vertical offset, blur radius, spread radius, color */
+    margin: 10px; /* Adjust margin as needed */
+    justify-content: center;
+    align-items: center;
+
+}
+
+
+.inside-rectangle{
+    width: 92%; /* Adjust width as needed */
+    height: 90%; /* Adjust height as needed */
+    background-color: white; /* Background color of the rectangle */
+    border-radius: 10px; /* Adjust border radius for rounded corners */
+    margin: auto; /* Adjust margin as needed */
+    padding: 40px; /* Adjust padding as needed */
+    display: flex;
+    justify-content: center; /* Aligns the ticket horizontally */
+    align-items: center;
+}
+
+.ticketStatuspending{
+    background-color: rgba(253, 215, 0, 0.925);
+    padding: 3px 20px;
+    border: 0px solid black;
+    width: fit-content;
+    border-radius: 30px;
+    color: rgb(3, 3, 3);
+    font-weight: 700;
+  }
+
+.ticketStatuscomplete{
+    background-color: #50fc00;
+    padding: 3px 20px;
+    width: fit-content;
+    border: 0px solid black;
+    border-radius: 30px;
+    color: rgb(3, 3, 3);
+    font-weight: 700;
+  }
+
+.card-text{
+    font-size: 19px;
+    font-weight: 400;
+    color: #010202;
+    margin: 10px 0;
+}
+
+.seemorelink{
+    text-decoration: none;
+    font-weight: 600;
+}

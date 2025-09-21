@@ -1,0 +1,11 @@
+.report-download{
+    background-color: #8436c2;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    margin-left: 50px;
+    margin-top: 40px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}

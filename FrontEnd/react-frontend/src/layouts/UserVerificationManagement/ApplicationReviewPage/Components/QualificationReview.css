@@ -1,0 +1,97 @@
+
+
+
+/* Base page styling */
+.rev_form {
+  background-color: #ffffff; /* White background for contrast */
+  color: #333; /* Dark text for readability */
+  font-family: Arial, sans-serif; /* Modern, readable font */
+}
+
+/* Header styling */
+.rev_heading {
+  background-color: #AC69E2; /* Purple theme color */
+  color: #ffffff; /* White text */
+  padding: 5px 0;
+  text-align: center;
+  border-radius: 8px;
+  margin-bottom: 5px; /* Space between sections */
+}
+
+.rev_heading2{
+  background-color: #797979; /* Purple theme color */
+  color: #000000; /* White text */
+  margin-top: 20px ;
+  padding-top: 20px;
+  padding-left: 50px;
+  padding-right: 20px;
+  padding-bottom: 20px;
+  text-align: left;
+  border-radius: 8px;
+  margin-bottom: 5px;
+}
+
+/* Card styling for user details and qualifications */
+.rev_card {
+  background-color: #f8f9fa; /* Slightly off white for cards */
+  border: 1px solid #dedede; /* Light grey border */
+  border-radius: 8px;
+  margin-bottom: 20px; /* Space between cards */
+  padding: 15px;
+  margin-top: 50px;
+  /* Center the card */
+  margin: auto;
+
+}
+
+.rev_card-header {
+  color: #303030; /* Purple text for headers inside cards */
+  font-size: 1.5rem; /* Larger text for headers */
+  margin-bottom: 10px; /* Space below the header */
+}
+
+.rev_user-detail, .rev_qualification-detail {
+  margin-bottom: 10px;
+  line-height: 1.6; /* More readable line spacing */
+}
+
+
+/* Buttons styling */
+.rev_button-approve, .rev_button-resubmit, .rev_button-suspend, .rev_button-reject {
+  border: none;
+  color: #fff;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+  border-radius: 8px; /* Rounded corners for buttons */
+}
+
+.rev_image {
+  width: 100%; /* Full width to use up the card space */
+  height: auto; /* Maintain aspect ratio */
+  border-radius: 4px; /* Rounded corners for aesthetics */
+  margin-bottom: 12px; /* Space below each image */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+}
+
+
+.rev_button-approve {
+  background-color: #4CAF50; /* Green */
+}
+
+.rev_button-reject, .rev_button-suspend {
+  background-color: #f44336; /* Red */
+}
+
+.rev_button-resubmit {
+  background-color: #e7e717; /* Yellow */
+}
+
+.rev_button-approve:hover, .rev_button-resubmit:hover, .rev_button-suspend:hover, .rev_button-reject:hover {
+  opacity: 0.8; /* Button interaction effect */
+}

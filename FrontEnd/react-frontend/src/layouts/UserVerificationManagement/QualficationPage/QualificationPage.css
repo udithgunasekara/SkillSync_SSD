@@ -1,0 +1,110 @@
+/* General Page Styles */
+.qua_container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.qua_title {
+  text-align: center;
+  color: #AC69E2; /* Theme color */
+  text-decoration: underline;
+}
+
+.qua_button-add {
+  background-color: #AC69E2; /* Theme color */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 50px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.qua_button-add:hover {
+  background-color: darken(#AC69E2, 10%);
+}
+
+/* Card Styles */
+.qua_card {
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.qua_card:hover {
+  transform: translateY(-5px);
+}
+
+.qua_card-body {
+  padding: 15px;
+  color: #333;
+  font-weight: bold;
+}
+
+.qua_card-title {
+  color: #333;
+}
+
+.qua_card-info {
+  color: #555;
+}
+
+/* Form Styles */
+.qua_form {
+  background: #f7f7f7;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.qua_input {
+  border: 2px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  max-width: 100%;
+}
+
+.qua_input:focus {
+  border-color: #AC69E2; /* Theme color */
+}
+
+.qua_label {
+  font-size: 16px;
+  color: #666;
+}
+
+.qua_submit-button {
+  background-color: #AC69E2; /* Theme color */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.qua_submit-button:hover {
+  background-color: darken(#AC69E2, 10%);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .qua_button-add {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .qua_form {
+    padding: 10px;
+  }
+
+  .qua_input {
+    padding: 8px;
+  }
+}

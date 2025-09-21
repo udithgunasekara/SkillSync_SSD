@@ -1,0 +1,12 @@
+/* RatingComponent.css */
+.fa-star {
+    font-size: 2rem;
+    color: gray;
+    cursor: pointer;
+  }
+  
+  .fa-star.checked {
+    color: gold;
+  }
+  
+    

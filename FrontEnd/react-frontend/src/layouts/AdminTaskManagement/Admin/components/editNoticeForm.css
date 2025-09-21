@@ -1,0 +1,26 @@
+#formback {
+    position: inherit;
+    top: 0;
+    left: 0;
+    width: 100%;
+    margin-top: 0px;
+    background-image: linear-gradient(rgba(202, 137, 255, 0.493), rgba(0, 0, 0, 0.7)), url("../../../../images/backgroundimage.jpg");
+    opacity: var(--mainOpacity);
+    height: 120vh !important;
+    min-height: fit-content;
+    background-size: cover;
+    background-position: center;
+}
+
+.ticketform {
+    width: 80%;
+    margin: auto;
+    background-color: rgba(0, 0, 0, 0.048);
+    backdrop-filter: blur(30px);
+    border-radius: 20px;
+    padding: 30px;
+    margin-top: 70px;
+    margin-bottom: 20px;
+    box-shadow: 0 30px 55px 0 rgba(0, 0, 0, 0.932);
+    border: 2px solid purple;
+}

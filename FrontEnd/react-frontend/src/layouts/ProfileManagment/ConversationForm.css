@@ -1,0 +1,25 @@
+.conversation-form {
+    margin: 20px;
+  }
+  
+  .request-button,
+  .contact-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #8436c2;
+    color: #fff;
+  }
+  
+  .request-button:hover,
+  .contact-button:hover {
+    background-color: #AC69E2;
+  }
+  
+  .request-button:active,
+  .contact-button:active {
+    background-color: #8436c2;
+  }
+  
