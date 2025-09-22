@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { FreelancerLogin } from '../Service/LoginService'
+import { AuthService } from '../../../../utils/AuthService';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { checkAccountStatus } from '../../Services/UserManagementService';
 import FreelancerContext from '../../Context/Context';
@@ -14,8 +14,7 @@ export const FreelancerLoginComponent =  () => {
     const {setFreelancerCon}:any = useContext(FreelancerContext);
 
 
-    //setup session storage
-    sessionStorage.setItem('username', username)
+    // Remove insecure session storage
 
     const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -24,38 +23,25 @@ export const FreelancerLoginComponent =  () => {
         const freelancer = { username, password, };
         console.log(freelancer); // For debug purposes
 
-        FreelancerLogin(freelancer).then((response) => {
-            console.log("Login response:", response.data);
-            //set id
-            sessionStorage.setItem('id', response.data)
-            sessionStorage.setItem('role', 'freelancer')
-
-            
-            setFreelancerCon(username);
-
-           // alert('login successful ');
- 
-            console.log("Account status check function calling ");
-            /// Check account status after login
-            checkAccountStatus(username).then((response) => {
-                // Assuming response.data is the boolean account status
-                const status = response.data;
-                if (status === true) {
-                    console.log("Account status accepted");
-                    // If the account status is accepted, navigate to UserTestPage
-                    navigate.push('/FreelancerDashboard');
-                } else {
-                    // If the account status is not accepted, navigate to AccountNotAcceptedPage
-                    navigate.push(`/ReSubmission/${username}`);
-                }
-                console.log("Account status check function called successfully");
-            }).catch((error) => {
-                console.error("Error checking account status:", error);
-               
-            });
-
+        AuthService.login(freelancer, 'freelancer').then((response) => {
+            if (response.message === 'Login successful') {
+                setFreelancerCon(username);
+                
+                checkAccountStatus(username).then((statusResponse) => {
+                    const status = statusResponse.data;
+                    if (status === true) {
+                        navigate.push('/FreelancerDashboard');
+                    } else {
+                        navigate.push(`/ReSubmission/${username}`);
+                    }
+                }).catch((error) => {
+                    console.error("Error checking account status:", error);
+                });
+            } else {
+                alert('Login Failed!');
+            }
         }).catch((error) => {
-            console.error("Login error:", error.response || error);
+            console.error("Login error:", error);
             alert('Login Failed!');
         });
     };
