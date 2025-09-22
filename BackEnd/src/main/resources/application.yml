@@ -36,3 +36,9 @@ paypal:
   client-secret: EF-F16KtR2f8nIi9di_WUFtbYPmGupQQfm68GuyGwNf4KuULatO2NEp1VBPrkh6K0zEwh2WAo5bGUFwZ
   mode: sandbox #use sandbox for testing
 
+app:
+  security:
+    rate-limit:
+      max-attempts: 3
+      block-duration-minutes: 15
+
