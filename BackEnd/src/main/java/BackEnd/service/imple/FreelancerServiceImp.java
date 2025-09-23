@@ -70,7 +70,7 @@ public class FreelancerServiceImp implements FreelancerService {
         Freelancer freelancer = freelancerRepo.findByUserName(username);
 
         //Delete from user credential table
-        UserCredential userCredential = userCredentialRepo.findByUserName(username);
+        UserCredential userCredential = userCredentialRepo.findByUserName(username).orElse(null);
 
         //Delete From image table (delete all image data)
         //TODO Delete from image table
