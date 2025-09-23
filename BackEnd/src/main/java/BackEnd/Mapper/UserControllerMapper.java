@@ -10,7 +10,7 @@ public class UserControllerMapper {
     public static UserCredential mapToUserCredential(ClientDTO client){
         UserCredential userCredential = new UserCredential();
 
-        userCredential.setUserName(client.getUserName());
+        userCredential.setUsername(client.getUserName());
         userCredential.setPassword(client.getPassword());
         userCredential.setRole("client");
         return userCredential;
@@ -20,7 +20,7 @@ public class UserControllerMapper {
     public static UserCredential mapFreelancerToUserCredential(FreelancerDTO freelancer){
         UserCredential userCredential = new UserCredential();
 
-        userCredential.setUserName(freelancer.getUserName());
+        userCredential.setUsername(freelancer.getUserName());
         userCredential.setPassword(freelancer.getPassword());
         userCredential.setRole("freelancer");
         return userCredential;

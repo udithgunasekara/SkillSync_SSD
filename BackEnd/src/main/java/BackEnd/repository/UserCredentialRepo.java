@@ -29,4 +29,12 @@ public interface UserCredentialRepo extends JpaRepository<UserCredential, Long> 
     @Deprecated
     @Query(value = "SELECT * FROM user_credential WHERE user_name = :username", nativeQuery = true)
     Optional<UserCredential> findByUsername(@Param("username") String username);
+    
+    // OAuth2 specific methods
+    Optional<UserCredential> findByEmail(String email);
+    Optional<UserCredential> findByGoogleId(String googleId);
+    
+    // Check existence methods for OAuth2
+    boolean existsByEmail(String email);
+    boolean existsByGoogleId(String googleId);
 }
