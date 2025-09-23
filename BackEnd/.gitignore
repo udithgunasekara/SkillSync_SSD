@@ -1,0 +1,20 @@
+# Backend build output
+target/
+
+# Compiled files
+*.class
+*.jar
+*.war
+*.ear
+
+# IDE / Editor
+*.iml
+.idea/
+.vscode/
+*.swp
+
+# Logs
+*.log
+
+# OS junk
+.DS_Store
