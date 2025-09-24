@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { csrfService } from './CsrfService';
 
 class ApiService {
@@ -20,7 +20,7 @@ class ApiService {
     private setupInterceptors(): void {
         // Request interceptor to add CSRF token
         this.axiosInstance.interceptors.request.use(
-            async (config: AxiosRequestConfig) => {
+            async (config: InternalAxiosRequestConfig) => {
                 // Add CSRF token for state-changing requests
                 if (['post', 'put', 'delete', 'patch'].includes(config.method?.toLowerCase() || '')) {
                     let csrfToken = csrfService.getCsrfToken();
@@ -75,19 +75,19 @@ class ApiService {
     }
 
     // Standard HTTP methods with CSRF protection
-    async get(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse> {
+    async get<T = any>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
         return this.axiosInstance.get(url, config);
     }
 
-    async post(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse> {
+    async post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
         return this.axiosInstance.post(url, data, config);
     }
 
-    async put(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse> {
+    async put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
         return this.axiosInstance.put(url, data, config);
     }
 
-    async delete(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse> {
+    async delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
         return this.axiosInstance.delete(url, config);
     }
 
