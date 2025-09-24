@@ -41,4 +41,8 @@ app:
     rate-limit:
       max-attempts: 3
       block-duration-minutes: 15
+  cors:
+    allowed-origins: http://localhost:3000,http://127.0.0.1:3000
+    allowed-headers: Content-Type,Authorization,X-Requested-With,Accept,Origin
+    max-age: 3600
 

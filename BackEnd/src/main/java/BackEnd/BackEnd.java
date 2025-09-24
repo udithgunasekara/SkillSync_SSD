@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 @SpringBootApplication
 @EnableScheduling
 @RestController
-@CrossOrigin
 //@ComponentScan(basePackages = {"com.example", "BackEnd.service"})
 public class BackEnd {
 
