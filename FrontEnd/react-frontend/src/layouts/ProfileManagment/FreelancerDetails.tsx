@@ -9,6 +9,7 @@ import 'mdb-react-ui-kit/dist/css/mdb.min.css';
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import './FreelancerDetails.css';
 import { listExams } from '../ExamsManagment/service/ExamsService';
+import { SecurityUtils } from '../../utils/SecurityUtils';
 import { getUserResultByUserName } from '../ExamsManagment/service/UserResultService';
 
 
@@ -220,9 +221,10 @@ const FreelancerDetails: React.FC = () => {
 
   const handleAccountswichingClick = () => {
     if (client && client.email === freelancer?.email) {
-      window.location.href = `http://localhost:3000/clients/${username}`;
+      const safeUrl = SecurityUtils.buildSafeURL('http://localhost:3000/clients', username || '');
+      SecurityUtils.safeNavigate(safeUrl, 'http://localhost:3000');
     } else {
-      window.location.href = 'http://localhost:3000/Client/Registration'; 
+      SecurityUtils.safeNavigate('http://localhost:3000/Client/Registration', 'http://localhost:3000'); 
     }
   };
 
@@ -246,11 +248,11 @@ const FreelancerDetails: React.FC = () => {
   };
   
   const ShowMyFreelancerdashboardButtonClick = () => {
-    window.location.href = ('http://localhost:3000/FreelancerDashboard');
+    SecurityUtils.safeNavigate('http://localhost:3000/FreelancerDashboard', 'http://localhost:3000');
   };
 
   const handleApplyExam = () => {
-    window.location.href = ('http://localhost:3000/FreelancerDashboard');
+    SecurityUtils.safeNavigate('http://localhost:3000/FreelancerDashboard', 'http://localhost:3000');
   };
 
   const handleLanguageEditClick = () => {

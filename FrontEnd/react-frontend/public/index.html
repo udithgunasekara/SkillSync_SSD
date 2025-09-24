@@ -5,9 +5,29 @@
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
+    
+    <!-- Security Headers for XSS Protection -->
+    <meta http-equiv="Content-Security-Policy" 
+          content="default-src 'self'; 
+                   script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://www.gstatic.com; 
+                   style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; 
+                   img-src 'self' data: https: blob:; 
+                   font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net;
+                   connect-src 'self' http://localhost:8082 https://firebase.googleapis.com https://firebaseapp.com;
+                   media-src 'self';
+                   object-src 'none';
+                   frame-src 'none';
+                   base-uri 'self';
+                   form-action 'self';">
+    
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    
     <meta
       name="description"
-      content="Web site created using create-react-app"
+      content="SkillSync - A secure freelancing platform"
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <!--

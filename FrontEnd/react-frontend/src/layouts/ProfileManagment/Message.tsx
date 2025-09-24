@@ -8,6 +8,8 @@ import {
   MDBIcon
 } from 'mdb-react-ui-kit';
 import Picker from 'emoji-picker-react';
+import DOMPurify from 'dompurify';
+import { SecurityUtils } from '../../utils/SecurityUtils';
 
 interface Message {
   messageId: string;
@@ -74,13 +76,28 @@ function Message() {
   };
 
   const handleSendMessage = async () => {
+    // Validate message content before sending
+    if (!newMessage.trim()) return;
+    
+    // Check for XSS content before sending
+    if (!SecurityUtils.isXSSSafe(newMessage)) {
+      alert('Message contains potentially unsafe content. Please review and try again.');
+      return;
+    }
+    
+    // Sanitize the message before sending to server
+    const sanitizedMessage = DOMPurify.sanitize(newMessage.trim(), {
+      ALLOWED_TAGS: [],
+      ALLOWED_ATTR: []
+    });
+    
     try {
       const currentDate = new Date().toISOString();
       await axios.post('http://localhost:8082/api/messages/save', {
         sender: username,
         receiver: username2,
         conversation: conversation,
-        messageText: newMessage,
+        messageText: sanitizedMessage,
         sentAt: currentDate,
       });
 
@@ -89,7 +106,7 @@ function Message() {
           conversationId: conversation,
           username: username,
           user2: username2,
-          message: newMessage,
+          message: sanitizedMessage,
           read: true,
           archived: false,
         });
@@ -97,7 +114,7 @@ function Message() {
           conversationId: conversation,
           username: username2,
           user2: username,
-          message: newMessage,
+          message: sanitizedMessage,
           read: false,
           archived: false,
         });
@@ -150,18 +167,27 @@ function Message() {
               <hr className='horizontel' />
             </div>
             <div className='message-dispaly' ref={messageDisplayRef}>
-              {messages.map((message) => (
-                <div key={message.messageId} className={message.sender === username ? 'user1-message-div' : 'user2-message-div'}>
-                  <MDBCard className={message.sender === username ? 'user1-message' : 'user2-message'}>
-                    <p className={message.sender === username ? 'message-text' : 'message-text-1'}>
-                      {message.messageText}
-                    </p>
-                    <p className={message.sender === username ? 'message-time' : 'message-time-1'}>
-                      {new Date(message.sentAt).toLocaleString()}
-                    </p>
-                  </MDBCard>
-                </div>
-              ))}
+              {messages.map((message) => {
+                // Sanitize message content to prevent XSS
+                const sanitizedMessage = DOMPurify.sanitize(message.messageText, {
+                  ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'br'],
+                  ALLOWED_ATTR: []
+                });
+                
+                return (
+                  <div key={message.messageId} className={message.sender === username ? 'user1-message-div' : 'user2-message-div'}>
+                    <MDBCard className={message.sender === username ? 'user1-message' : 'user2-message'}>
+                      <p 
+                        className={message.sender === username ? 'message-text' : 'message-text-1'}
+                        dangerouslySetInnerHTML={{ __html: sanitizedMessage }}
+                      />
+                      <p className={message.sender === username ? 'message-time' : 'message-time-1'}>
+                        {new Date(message.sentAt).toLocaleString()}
+                      </p>
+                    </MDBCard>
+                  </div>
+                );
+              })}
             </div>
             <div className='footer-msg'>
               <button className='emoji-btn'><MDBIcon far icon="grin-alt" size='lg' onClick={() => setShowPicker((val) => !val)} /></button>

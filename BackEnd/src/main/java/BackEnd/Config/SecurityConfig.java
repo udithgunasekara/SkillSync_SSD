@@ -30,15 +30,14 @@ public class SecurityConfig {
             // CORS configuration
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             
-            // CSRF configuration
+            // CSRF configuration - Enhanced for better protection
             .csrf(csrf -> csrf
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .csrfTokenRequestHandler(requestHandler)
                 .ignoringRequestMatchers(
-                    "/api/public/**",           // Public endpoints
-                    "/Client/login",            // Login endpoint (handled separately)
-                    "/Freelancer/login",        // Login endpoint (handled separately)
+                    "/api/public/**",           // Public endpoints only
                     "/error"                    // Error endpoints
+                    // REMOVED: Login endpoints to ensure CSRF protection
                 )
             )
             
@@ -49,12 +48,23 @@ public class SecurityConfig {
                 .maxSessionsPreventsLogin(false)
             )
             
-            // Authorization rules
+            // Authorization rules - More restrictive
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/api/public/**", "/Client/login", "/Freelancer/login").permitAll()
+                .requestMatchers("/api/public/**").permitAll()
                 .requestMatchers("/Client/Registration", "/Freelancer/Registration").permitAll()
                 .requestMatchers("/csrf").permitAll()  // CSRF token endpoint
+                .requestMatchers("/Client/login", "/Freelancer/login").permitAll() // Login with CSRF protection
                 .anyRequest().authenticated()
+            )
+            
+            // Security Headers for XSS protection
+            .headers(headers -> headers
+                .frameOptions(frameOptions -> frameOptions.deny())
+                .contentTypeOptions(contentTypeOptions -> {})
+                .httpStrictTransportSecurity(hsts -> hsts
+                    .maxAgeInSeconds(31536000)
+                    .includeSubDomains(true)
+                )
             )
             
             // Disable default form login for API

@@ -5,7 +5,10 @@ import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { AdminDashboard } from "./components/AdminDashboard/AdminDashboard";
 import { AdminSideBar } from "./components/AdminSideBar";
 import { AdminNavbar } from "./components/AdminNavbar";
-import { v4 } from "uuid"
+import { v4 } from "uuid";
+import DOMPurify from 'dompurify';
+import validator from 'validator';
+import { SecurityUtils } from "../../../utils/SecurityUtils";
 
 export const NewNoticePage = () => {
 
@@ -26,18 +29,49 @@ export const NewNoticePage = () => {
 
     const handleChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        let sanitizedInput: string = "";
-
-        if (/[^a-zA-Z0-9\s]/.test(e.target.value)) {
-            sanitizedInput = e.target.value.replace(/[^\w\s]/g, '');
-        } else {
-            sanitizedInput = "ok";
-        }
-        if (sanitizedInput !== "") {
-            setFormData(prevState => ({ ...prevState, [name]: value }));
-            console.log(e.target.value);
+        
+        // Check for XSS content
+        if (!SecurityUtils.isXSSSafe(value)) {
+            setErrorMessage('Input contains potentially unsafe content. Please remove any script tags or suspicious content.');
+            return;
         }
 
+        // Sanitize input based on field type
+        let sanitizedValue: string;
+        
+        switch (name) {
+            case 'title':
+            case 'description':
+                // Allow basic text with punctuation for titles and descriptions
+                sanitizedValue = DOMPurify.sanitize(value, {
+                    ALLOWED_TAGS: [],
+                    ALLOWED_ATTR: []
+                });
+                break;
+            case 'moreDetailsLink':
+                // Validate and sanitize URLs
+                if (value && !validator.isURL(value, { protocols: ['http', 'https'] })) {
+                    setErrorMessage('Please enter a valid URL (must start with http:// or https://)');
+                    return;
+                }
+                sanitizedValue = DOMPurify.sanitize(value, {
+                    ALLOWED_TAGS: [],
+                    ALLOWED_ATTR: []
+                });
+                break;
+            default:
+                sanitizedValue = DOMPurify.sanitize(value, {
+                    ALLOWED_TAGS: [],
+                    ALLOWED_ATTR: []
+                });
+        }
+
+        // Clear error message if validation passes
+        if (errorMessage && name !== 'noticeimage') {
+            setErrorMessage('');
+        }
+
+        setFormData(prevState => ({ ...prevState, [name]: sanitizedValue }));
     };
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -3,9 +3,11 @@ package BackEnd.controller;
 import BackEnd.DTO.MessageDTO;
 import BackEnd.entity.Message;
 import BackEnd.service.MessageService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.Optional;
 @RestController
 @CrossOrigin
 @RequestMapping("/api/messages")
+@Validated
 public class MessageController {
 
     private final MessageService messageService;
@@ -40,13 +43,13 @@ public class MessageController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<MessageDTO> createMessage(@RequestBody Message message) {
+    public ResponseEntity<MessageDTO> createMessage(@Valid @RequestBody Message message) {
         MessageDTO createdMessage = messageService.saveMessage(message);
         return new ResponseEntity<>(createdMessage, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Message> updateMessage(@PathVariable Long id, @RequestBody Message updatedMessage) {
+    public ResponseEntity<Message> updateMessage(@PathVariable Long id, @Valid @RequestBody Message updatedMessage) {
         Optional<Message> updated = messageService.updateMessage(id, updatedMessage);
         return updated.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));

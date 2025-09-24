@@ -4,10 +4,12 @@ import BackEnd.DTO.TicketDto;
 import BackEnd.Exceptions.ResourceNotFound;
 import BackEnd.service.TicketServices;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +19,7 @@ import java.util.List;
 @Controller
 @AllArgsConstructor
 @RequestMapping("/ticket")
+@Validated
 public class TicketController {
     public TicketServices ticketServices;
 
@@ -30,7 +33,7 @@ public class TicketController {
 
     //url: http://localhost:8082/ticket/addticket
     @PostMapping("/addticket")
-    public ResponseEntity<TicketDto> raiseTicket(@RequestBody TicketDto ticketdto){
+    public ResponseEntity<TicketDto> raiseTicket(@Valid @RequestBody TicketDto ticketdto){
         TicketDto newTicket = ticketServices.raiseTicket(ticketdto);
         return new ResponseEntity<>(newTicket, HttpStatus.CREATED);
     }
@@ -47,7 +50,7 @@ public class TicketController {
     }
 
     @PutMapping("/updateticket/{id}")
-    public ResponseEntity<TicketDto> updateTicketByID(@RequestBody TicketDto updateinfo, @PathVariable Long id, Long usrid){
+    public ResponseEntity<TicketDto> updateTicketByID(@Valid @RequestBody TicketDto updateinfo, @PathVariable Long id, Long usrid){
         TicketDto updatedticket = ticketServices.updateTicketByID(updateinfo, id, usrid);
         return new ResponseEntity<>(updatedticket, HttpStatus.OK);
     }

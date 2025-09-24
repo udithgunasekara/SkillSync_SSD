@@ -2,6 +2,7 @@ package BackEnd.controller;
 
 import BackEnd.DTO.publicNoticesDTO;
 import BackEnd.service.publicNoticeServices;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -17,6 +19,7 @@ import java.util.List;
 @Controller
 @AllArgsConstructor
 @RequestMapping("/notices")
+@Validated
 public class publicNoticesController {
     public publicNoticeServices publicNoticesServices;
 
@@ -30,7 +33,7 @@ public class publicNoticesController {
     //url: http://localhost:8082/notices/addnotice
 
     @PostMapping("/addnotice")
-    public ResponseEntity<publicNoticesDTO> addNotice(@RequestBody publicNoticesDTO noticedto){
+    public ResponseEntity<publicNoticesDTO> addNotice(@Valid @RequestBody publicNoticesDTO noticedto){
         System.out.println(noticedto.getMoreDetailsLink());
         publicNoticesDTO newNotice = publicNoticesServices.addNotice(noticedto);
         System.out.println(newNotice.getTitle());
@@ -48,7 +51,7 @@ public class publicNoticesController {
 
     //url: http://localhost:8082/notices/updatenotice/1
     @PutMapping("/updatenotice/{id}")
-    public ResponseEntity<publicNoticesDTO> updateNoticeByID(@RequestBody publicNoticesDTO updateinfo, @PathVariable Long id){
+    public ResponseEntity<publicNoticesDTO> updateNoticeByID(@Valid @RequestBody publicNoticesDTO updateinfo, @PathVariable Long id){
         publicNoticesDTO updatednotice = publicNoticesServices.updateNoticeByID(updateinfo, id);
         return new ResponseEntity<>(updatednotice, HttpStatus.OK);
     }

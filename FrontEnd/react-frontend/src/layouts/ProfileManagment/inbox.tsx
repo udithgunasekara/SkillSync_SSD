@@ -5,6 +5,7 @@ import './inbox.css';
 import { MDBBadge} from 'mdb-react-ui-kit';
 import 'mdb-react-ui-kit/dist/css/mdb.min.css';
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import { SecurityUtils } from '../../utils/SecurityUtils';
 
 interface InboxMessage {
   user2: string;
@@ -79,22 +80,40 @@ function Inbox() {
       </div>
       <div className='inbox-div'>
         <ul>
-          {inboxMessages.map((message, index) => (
-            <a className='one-user-row-inbox-a' href={`http://localhost:3000/Message/${username}/${message.user2}/${message.conversationId}`} key={index}>
-              <div className='one-user-row-inbox'>
-              {(!message.read) &&(<div className='notification'>
-              </div>)}
-                {imagesURL[message.user2] ? (
-                  <img src={imagesURL[message.user2]} alt="Profile" style={{ maxWidth: '100px' }} className='profile-image-inbox'/>
-                ) : (
-                  <img src={defaultImageUrl} alt="Default Profile" style={{ maxWidth: '100%' }} className='profile-image-inbox' />
-                )}
-                <h3 className='inbox-user-name'>@{message.user2}</h3> 
-                <p className='latest-msg'>{message.message}</p>
+          {inboxMessages.map((message, index) => {
+            // Build safe URL with encoded parameters
+            const safeUrl = SecurityUtils.buildSafeURL(
+              'http://localhost:3000/Message',
+              username || '',
+              message.user2,
+              message.conversationId
+            );
+            
+            return (
+              <a 
+                className='one-user-row-inbox-a' 
+                href={safeUrl} 
+                key={index}
+                onClick={(e) => {
+                  e.preventDefault();
+                  SecurityUtils.safeNavigate(safeUrl, 'http://localhost:3000');
+                }}
+              >
+                <div className='one-user-row-inbox'>
+                {(!message.read) &&(<div className='notification'>
+                </div>)}
+                  {imagesURL[message.user2] ? (
+                    <img src={imagesURL[message.user2]} alt="Profile" style={{ maxWidth: '100px' }} className='profile-image-inbox'/>
+                  ) : (
+                    <img src={defaultImageUrl} alt="Default Profile" style={{ maxWidth: '100%' }} className='profile-image-inbox' />
+                  )}
+                  <h3 className='inbox-user-name'>@{SecurityUtils.encodeURLParam(message.user2)}</h3> 
+                  <p className='latest-msg'>{message.message}</p>
                 
-              </div>
-            </a>
-          ))}
+                </div>
+              </a>
+            );
+          })}
         </ul>    
       </div> 
     </div>

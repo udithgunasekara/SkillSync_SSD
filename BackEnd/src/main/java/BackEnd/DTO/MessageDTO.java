@@ -1,15 +1,33 @@
 package BackEnd.DTO;
 
 import jakarta.persistence.Column;
+import jakarta.validation.constraints.*;
+import org.hibernate.validator.constraints.Length;
 
 import java.sql.Timestamp;
 
 public class MessageDTO {
     private Long messageId;
+    
+    @NotBlank(message = "Sender cannot be blank")
+    @Size(min = 3, max = 50, message = "Sender must be between 3 and 50 characters")
+    @Pattern(regexp = "^[a-zA-Z0-9._-]+$", message = "Sender can only contain alphanumeric characters, dots, underscores, and hyphens")
     private String sender;
+    
+    @NotBlank(message = "Receiver cannot be blank")
+    @Size(min = 3, max = 50, message = "Receiver must be between 3 and 50 characters")
+    @Pattern(regexp = "^[a-zA-Z0-9._-]+$", message = "Receiver can only contain alphanumeric characters, dots, underscores, and hyphens")
     private String receiver;
+    
+    @NotNull(message = "Conversation ID cannot be null")
+    @Positive(message = "Conversation ID must be positive")
     private Long conversation;
+    
+    @NotBlank(message = "Message text cannot be blank")
+    @Size(max = 1000, message = "Message text cannot exceed 1000 characters")
+    @Pattern(regexp = "^[^<>\"'&]*$", message = "Message text contains invalid characters")
     private String messageText;
+    
     private Timestamp sentAt;
 
     public MessageDTO(Long messageId, String sender, String receiver, Long conversation, String messageText, Timestamp sentAt) {
