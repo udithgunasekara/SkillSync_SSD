@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import { apiService } from '../../services/ApiService';
 import Inbox from './inbox';
 import './Message.css';
 import {
@@ -29,19 +29,19 @@ function Message() {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const response = await axios.get<Message[]>(`http://localhost:8082/api/messages/${conversation}`);
+        const response = await apiService.get<Message[]>(`/api/messages/${conversation}`);
         setMessages(response.data);
 
-        const inboxresponse = await axios.get(`http://localhost:8082/api/inbox/conversation/${conversation}`);
+        const inboxresponse = await apiService.get(`/api/inbox/conversation/${conversation}`);
         setInbox(inboxresponse.data);
 
         if(inboxresponse.data.length!==0){
-          const readornot = await axios.patch(`http://localhost:8082/api/inbox/changeIsRead/${conversation}/${username}`);
+          const readornot = await apiService.patch(`/api/inbox/changeIsRead/${conversation}/${username}`);
           console.log("message read",readornot.data);
         }
 
         try {
-          const image = await axios.get(`http://localhost:8082/api/images/${username2}`, {
+          const image = await apiService.get(`/api/images/${username2}`, {
           responseType: 'blob', 
         });
         if (image.data) {
@@ -76,7 +76,7 @@ function Message() {
   const handleSendMessage = async () => {
     try {
       const currentDate = new Date().toISOString();
-      await axios.post('http://localhost:8082/api/messages/save', {
+      await apiService.post('/api/messages/save', {
         sender: username,
         receiver: username2,
         conversation: conversation,
@@ -85,7 +85,7 @@ function Message() {
       });
 
       if (inbox.length !== 0) {
-        const inboxresponse = await axios.post(`http://localhost:8082/api/inbox/${conversation}/${username}`, {
+        const inboxresponse = await apiService.post(`/api/inbox/${conversation}/${username}`, {
           conversationId: conversation,
           username: username,
           user2: username2,
@@ -93,7 +93,7 @@ function Message() {
           read: true,
           archived: false,
         });
-        const inboxresponse2 = await axios.post(`http://localhost:8082/api/inbox/${conversation}/${username2}`, {
+        const inboxresponse2 = await apiService.post(`/api/inbox/${conversation}/${username2}`, {
           conversationId: conversation,
           username: username2,
           user2: username,
@@ -103,7 +103,7 @@ function Message() {
         });
         console.log('Message sent successfully:', inboxresponse.data, inboxresponse2.data);
       }else {
-        const inboxresponse = await axios.post('http://localhost:8082/api/inbox', {
+        const inboxresponse = await apiService.post('/api/inbox', {
           conversationId: conversation,
           username: username,
           user2: username2,
@@ -112,7 +112,7 @@ function Message() {
           archived: false,
         });
 
-        const inboxresponse2 = await axios.post('http://localhost:8082/api/inbox', {
+        const inboxresponse2 = await apiService.post('/api/inbox', {
           conversationId: conversation,
           username: username2,
           user2: username,

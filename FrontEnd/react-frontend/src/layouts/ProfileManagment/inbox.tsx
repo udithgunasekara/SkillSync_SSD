@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import { apiService } from '../../services/ApiService';
 import './inbox.css';
 import { MDBBadge} from 'mdb-react-ui-kit';
 import 'mdb-react-ui-kit/dist/css/mdb.min.css';
@@ -22,16 +22,16 @@ function Inbox() {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const inboxResponse = await axios.get<InboxMessage[]>(`http://localhost:8082/api/inbox/${username}`);
+        const inboxResponse = await apiService.get<InboxMessage[]>(`/api/inbox/${username}`);
         setInboxMessages(inboxResponse.data);
-        const uniqueUsers = inboxResponse.data.reduce((acc: string[], message) => {
+        const uniqueUsers = inboxResponse.data.reduce((acc: string[], message: InboxMessage) => {
           if (!acc.includes(message.user2)) {
             acc.push(message.user2);
           }
           return acc;
         }, []);
         
-        uniqueUsers.forEach(user => {
+        uniqueUsers.forEach((user: string) => {
           fetchImage(user);
         });
       } catch (error) {
@@ -41,7 +41,7 @@ function Inbox() {
 
     const fetchImage = async (user: string) => {
       try {
-        const response = await axios.get(`http://localhost:8082/api/images/${user}`, {
+        const response = await apiService.get(`/api/images/${user}`, {
           responseType: 'blob',
         });
         if (response.data) {

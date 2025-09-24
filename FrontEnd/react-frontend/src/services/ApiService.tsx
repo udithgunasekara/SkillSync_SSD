@@ -87,6 +87,10 @@ class ApiService {
         return this.axiosInstance.put(url, data, config);
     }
 
+    async patch<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+        return this.axiosInstance.patch(url, data, config);
+    }
+
     async delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
         return this.axiosInstance.delete(url, config);
     }

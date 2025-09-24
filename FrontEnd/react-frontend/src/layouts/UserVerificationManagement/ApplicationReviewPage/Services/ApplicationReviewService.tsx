@@ -1,6 +1,5 @@
-import axios from "axios";
+import { apiService } from '../../../../services/ApiService';
 
-const REST_API_INPROGRESS_FREELANCERS = "http://localhost:8082/Freelancer/AllInProgress";
+const REST_API_INPROGRESS_FREELANCERS = "/Freelancer/AllInProgress";
 
-
-export const ListInProgressFreelancers = () => axios.get(REST_API_INPROGRESS_FREELANCERS);
+export const ListInProgressFreelancers = () => apiService.get(REST_API_INPROGRESS_FREELANCERS);
