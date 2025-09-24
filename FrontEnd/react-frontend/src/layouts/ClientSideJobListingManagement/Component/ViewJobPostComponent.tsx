@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useHistory, useLocation } from 'react-router-dom';
 import moment from 'moment';
 import { getJobPostingById, deleteJobPost } from '../Service/JobService';
+import { SafeText } from '../../../utils/XSSProtection';
 
 const styles = {
     container: {
@@ -85,11 +86,11 @@ const ViewJobPostComponent: React.FC = () => {
                     <div className='card-body' >
                         <div className='row'>
                             <div className='col-md-12'>
-                                <h2 className='text-center'>{job.jobTitle}</h2>
+                                <SafeText text={job.jobTitle} className='text-center' tag="h2" />
                                 <hr />
                                 <p style={{ fontWeight: '600' }}>Posted {formatElapsedTime(job.postedTime)}</p>
                                 <hr />
-                                <p>{job.description}</p>
+                                <SafeText text={job.description} tag="p" />
                                 <hr />
                                 <p>
                                     <span>fixed price - </span>

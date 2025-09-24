@@ -5,11 +5,13 @@ import BackEnd.Exceptions.ResourceNotFound;
 import BackEnd.entity.publicNotices;
 import BackEnd.repository.publicNotcesRepo;
 import BackEnd.service.publicNoticeServices;
+import BackEnd.service.InputValidationService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.HtmlUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +21,7 @@ import java.util.List;
 public class publicNoticeServicesImpl implements publicNoticeServices{
     private publicNotcesRepo publicnoticerepository;
     private ModelMapper modelmapper;
+    private InputValidationService inputValidationService;
 
     //get all public notices
     @Override
@@ -34,6 +37,17 @@ public class publicNoticeServicesImpl implements publicNoticeServices{
 
     @Override
     public publicNoticesDTO addNotice(publicNoticesDTO publicNoticesDTO) {
+        // Validate and sanitize input data
+        if (publicNoticesDTO.getTitle() != null) {
+            publicNoticesDTO.setTitle(inputValidationService.sanitizeString(publicNoticesDTO.getTitle()));
+        }
+        if (publicNoticesDTO.getDescription() != null) {
+            publicNoticesDTO.setDescription(inputValidationService.sanitizeString(publicNoticesDTO.getDescription()));
+        }
+        if (publicNoticesDTO.getMoreDetailsLink() != null) {
+            publicNoticesDTO.setMoreDetailsLink(inputValidationService.sanitizeString(publicNoticesDTO.getMoreDetailsLink()));
+        }
+        
         publicNotices addnotice = modelmapper.map(publicNoticesDTO, publicNotices.class);
 
         publicNotices notice = publicnoticerepository.save(addnotice);

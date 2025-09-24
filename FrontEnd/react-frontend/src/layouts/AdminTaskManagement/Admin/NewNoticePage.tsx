@@ -5,9 +5,11 @@ import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { AdminDashboard } from "./components/AdminDashboard/AdminDashboard";
 import { AdminSideBar } from "./components/AdminSideBar";
 import { AdminNavbar } from "./components/AdminNavbar";
-import { v4 } from "uuid"
+import { v4 } from "uuid";
+import { useSafeInput } from "../../../utils/XSSProtection";
 
 export const NewNoticePage = () => {
+    const { sanitizeInput } = useSafeInput();
 
     const [imageupload, setImageUpload] = useState<any>("");
     const [image, setImage] = useState("");
@@ -26,18 +28,12 @@ export const NewNoticePage = () => {
 
     const handleChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        let sanitizedInput: string = "";
-
-        if (/[^a-zA-Z0-9\s]/.test(e.target.value)) {
-            sanitizedInput = e.target.value.replace(/[^\w\s]/g, '');
-        } else {
-            sanitizedInput = "ok";
-        }
-        if (sanitizedInput !== "") {
-            setFormData(prevState => ({ ...prevState, [name]: value }));
-            console.log(e.target.value);
-        }
-
+        
+        // Use our XSS protection utility
+        const sanitizedInput = sanitizeInput(value, false);
+        
+        setFormData(prevState => ({ ...prevState, [name]: sanitizedInput }));
+        console.log(sanitizedInput);
     };
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {

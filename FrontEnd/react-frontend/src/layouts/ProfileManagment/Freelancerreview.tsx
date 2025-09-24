@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { MDBIcon } from 'mdb-react-ui-kit';
-import './Freelancerreview.css'
+import './Freelancerreview.css';
+import { SafeText } from '../../utils/XSSProtection';
 
 interface Rating {
     id: string;
@@ -61,7 +62,7 @@ const Freelancerreview: React.FC = () => {
                     <div key={rating.id} className='one-review-div'>
 
                         <p>{renderStarRating(rating.rating)}</p> 
-                        <p>{rating.review}</p>
+                        <SafeText text={rating.review} tag="p" />
                     </div>
                 ))}
             </ul>

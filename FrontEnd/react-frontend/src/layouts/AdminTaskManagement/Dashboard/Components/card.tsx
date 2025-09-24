@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PublicNoticesModel from '../../../../Model/publicNoticesModel';
+import { SafeText, sanitizeURL } from '../../../../utils/XSSProtection';
 
 
 export const Cardcontent: React.FC<{ notice: PublicNoticesModel, key: number }> = (props) => {
@@ -42,15 +43,15 @@ export const Cardcontent: React.FC<{ notice: PublicNoticesModel, key: number }> 
             <div className="card mt-3" style={{ width: "80%",borderRadius:"20px", borderColor:"rgba(70, 11, 120, 0.7)", borderWidth:"4px", boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.4)"}}>
                 <div className="card-body">
                     <div className="text-left"> {/* Wrapper for text and button */}
-                        <h4 className="card-title">{props.notice.title}</h4>
+                        <SafeText text={props.notice.title} className="card-title" tag="h4" />
                         <h6>{lastupdated !== posted ? `Edited` : ``}</h6>
                         <h6>Posted:{createdDate}</h6>
-                        <p className="card-text">
-                            {props.notice.description}
-                        </p>
+                        <SafeText text={props.notice.description} className="card-text" tag="p" />
                         {props.notice.moreDetailsLink !== "" && props.notice.moreDetailsLink !== null ?
                             <p>
-                                for more details visit: <a href={props.notice.moreDetailsLink}>{props.notice.moreDetailsLink}</a>
+                                for more details visit: <a href={sanitizeURL(props.notice.moreDetailsLink)} rel="noopener noreferrer" target="_blank">
+                                    <SafeText text={props.notice.moreDetailsLink} tag="span" />
+                                </a>
                             </p> : ""
                         }
                     </div>
@@ -59,9 +60,12 @@ export const Cardcontent: React.FC<{ notice: PublicNoticesModel, key: number }> 
                 <div className="d-flex justify-content-center " >
                     {props.notice.imagelink !== "" && props.notice.imagelink !== null ?
                         <img className="card-img-bottom "  
-                            src={props.notice.imagelink}
-                            alt="Card image"
-                            style={{ width: "80%", height: "90%" ,borderRadius:"20px"}} /> : ""}
+                            src={sanitizeURL(props.notice.imagelink)}
+                            alt="Notice image"
+                            style={{ width: "80%", height: "90%" ,borderRadius:"20px"}}
+                            onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                            }} /> : ""}
                 </div>
             </div>
 

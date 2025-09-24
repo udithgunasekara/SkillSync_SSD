@@ -8,6 +8,7 @@ import {
   MDBIcon
 } from 'mdb-react-ui-kit';
 import Picker from 'emoji-picker-react';
+import { SafeText } from '../../utils/XSSProtection';
 
 interface Message {
   messageId: string;
@@ -153,9 +154,11 @@ function Message() {
               {messages.map((message) => (
                 <div key={message.messageId} className={message.sender === username ? 'user1-message-div' : 'user2-message-div'}>
                   <MDBCard className={message.sender === username ? 'user1-message' : 'user2-message'}>
-                    <p className={message.sender === username ? 'message-text' : 'message-text-1'}>
-                      {message.messageText}
-                    </p>
+                    <SafeText 
+                      text={message.messageText}
+                      className={message.sender === username ? 'message-text' : 'message-text-1'}
+                      tag="p"
+                    />
                     <p className={message.sender === username ? 'message-time' : 'message-time-1'}>
                       {new Date(message.sentAt).toLocaleString()}
                     </p>

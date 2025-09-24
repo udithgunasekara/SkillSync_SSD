@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getRating } from '../deliveringJobsRatingSystemServices/RatingService';
 import { useHistory } from 'react-router-dom';
+import { SafeText } from '../../../utils/XSSProtection';
 
 // Define the Rating type based on your response data structure
 interface Rating {
@@ -49,7 +50,7 @@ const ViewRatingComponent: React.FC = () => {
                                 Rate: {rating.rate}
                             </div>
                             <div>
-                                Review: {rating.review}
+                                Review: <SafeText text={rating.review || ''} tag="span" />
                             </div>
                             <div>
                                 User ID: {rating.userId}

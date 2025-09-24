@@ -1,6 +1,7 @@
 package BackEnd.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.HtmlUtils;
 import java.util.regex.Pattern;
 
 @Service
@@ -43,11 +44,56 @@ public class InputValidationService {
         if (input == null) {
             return null;
         }
-        // Remove potentially dangerous characters
-        return input.trim()
-                   .replaceAll("[<>\"'%;()&+]", "")
+        
+        // First trim the input
+        String trimmed = input.trim();
+        
+        // HTML encode to prevent XSS
+        String htmlEncoded = HtmlUtils.htmlEscape(trimmed);
+        
+        // Remove potentially dangerous patterns
+        String sanitized = htmlEncoded
+                   .replaceAll("(?i)javascript:", "")
+                   .replaceAll("(?i)vbscript:", "")
+                   .replaceAll("(?i)data:", "")
+                   .replaceAll("(?i)about:", "")
                    .replaceAll("--", "")
                    .replaceAll("/\\*", "")
                    .replaceAll("\\*/", "");
+                   
+        return sanitized;
+    }
+    
+    public String sanitizeHtml(String input) {
+        if (input == null) {
+            return null;
+        }
+        
+        // For HTML content, use HTML encoding to escape all HTML entities
+        return HtmlUtils.htmlEscape(input.trim());
+    }
+    
+    public boolean isValidUrl(String url) {
+        if (url == null || url.trim().isEmpty()) {
+            return false;
+        }
+        
+        String lowercaseUrl = url.toLowerCase().trim();
+        
+        // Block dangerous URL schemes
+        if (lowercaseUrl.startsWith("javascript:") || 
+            lowercaseUrl.startsWith("data:") ||
+            lowercaseUrl.startsWith("vbscript:") ||
+            lowercaseUrl.startsWith("about:")) {
+            return false;
+        }
+        
+        // Allow only http, https, and relative URLs
+        return lowercaseUrl.startsWith("http://") || 
+               lowercaseUrl.startsWith("https://") ||
+               lowercaseUrl.startsWith("/") ||
+               lowercaseUrl.startsWith("./") ||
+               lowercaseUrl.startsWith("../") ||
+               !lowercaseUrl.contains(":");
     }
 }

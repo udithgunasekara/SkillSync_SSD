@@ -2,6 +2,7 @@ package BackEnd.controller;
 
 import BackEnd.DTO.publicNoticesDTO;
 import BackEnd.service.publicNoticeServices;
+import BackEnd.service.InputValidationService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +20,7 @@ import java.util.List;
 @RequestMapping("/notices")
 public class publicNoticesController {
     public publicNoticeServices publicNoticesServices;
+    private InputValidationService inputValidationService;
 
     //url : http://localhost:8082/notices/allnotices
     @GetMapping("allnotices")
@@ -31,6 +33,21 @@ public class publicNoticesController {
 
     @PostMapping("/addnotice")
     public ResponseEntity<publicNoticesDTO> addNotice(@RequestBody publicNoticesDTO noticedto){
+        // Validate input data
+        if (noticedto.getTitle() == null || noticedto.getTitle().trim().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        if (noticedto.getDescription() == null || noticedto.getDescription().trim().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        
+        // Validate URL if provided
+        if (noticedto.getMoreDetailsLink() != null && !noticedto.getMoreDetailsLink().trim().isEmpty()) {
+            if (!inputValidationService.isValidUrl(noticedto.getMoreDetailsLink())) {
+                return ResponseEntity.badRequest().build();
+            }
+        }
+        
         System.out.println(noticedto.getMoreDetailsLink());
         publicNoticesDTO newNotice = publicNoticesServices.addNotice(noticedto);
         System.out.println(newNotice.getTitle());
