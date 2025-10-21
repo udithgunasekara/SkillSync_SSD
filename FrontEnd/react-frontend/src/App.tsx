@@ -38,6 +38,10 @@ import QualificationReview from './layouts/UserVerificationManagement/Applicatio
 import InProgress from './layouts/UserVerificationManagement/UserRegistration/InProgress'
 import ResubmissionUpload from './layouts/UserVerificationManagement/QualificationUpload/ResubmissionUpload'
 import UserTest from './layouts/UserVerificationManagement/UserLogin/Components/UserTest';
+// OAuth Components
+import OAuthCallback from './components/OAuthCallback';
+import RoleSelectionPage from './components/RoleSelectionPage';
+import { AuthProvider } from './context/AuthContext';
 import ListExamComponents from './layouts/ExamsManagment/Component/ListExamComponents';
 import ExamComponent from './layouts/ExamsManagment/Component/ExamComponent';
 import QuestionsComponent from './layouts/ExamsManagment/Component/QuestionsComponent';
@@ -88,9 +92,9 @@ import { ThemeContext } from './layouts/UserVerificationManagement/Context/theme
 export const App = () => {
   const [theme, setTheme] = useState<string>("light");
   return (
-
-  <FreelancerContextProvider>
-   <ThemeContext.Provider value={{ theme, setTheme }} >
+    <AuthProvider>
+      <FreelancerContextProvider>
+        <ThemeContext.Provider value={{ theme, setTheme }} >
    
    <Router>
       <div className='d-flex flex-column min-vh-100'>
@@ -516,6 +520,14 @@ export const App = () => {
             </Route>
             {/* End nipuni's file */}
 
+            {/* OAuth Routes */}
+            <Route path='/auth/callback' exact>
+              <OAuthCallback />
+            </Route>
+            
+            <Route path='/auth/role-selection' exact>
+              <RoleSelectionPage />
+            </Route>
 
           </Switch>
         </div>
@@ -523,7 +535,7 @@ export const App = () => {
     </Router>
     </ThemeContext.Provider>
     </FreelancerContextProvider>
- 
+    </AuthProvider>
    
   );
 }

@@ -1,5 +1,6 @@
 package BackEnd.Config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -7,6 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
@@ -18,6 +20,9 @@ import java.util.Arrays;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -30,34 +35,53 @@ public class SecurityConfig {
             // CORS configuration
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             
-            // CSRF configuration
+            // CSRF configuration - PRESERVED from original implementation
             .csrf(csrf -> csrf
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .csrfTokenRequestHandler(requestHandler)
                 .ignoringRequestMatchers(
                     "/api/public/**",           // Public endpoints
-                    "/Client/login",            // Login endpoint (handled separately)
-                    "/Freelancer/login",        // Login endpoint (handled separately)
+                    "/auth/**",                 // OAuth endpoints - NEW
+                    "/Client/login",            // Traditional login endpoints
+                    "/Freelancer/login",        
+                    "/Client/Registration",     // Registration endpoints  
+                    "/Freelancer/Registration",
+                    "/csrf",                    // CSRF token endpoint
                     "/error"                    // Error endpoints
                 )
             )
             
-            // Session management
+            // Session management - UPDATED for JWT
             .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                .maximumSessions(1)
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // Allow sessions for CSRF
+                .maximumSessions(5) // Increased for multiple devices
                 .maxSessionsPreventsLogin(false)
             )
             
-            // Authorization rules
+            // Add JWT filter BEFORE UsernamePasswordAuthenticationFilter
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            
+            // Authorization rules - UPDATED
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/api/public/**", "/Client/login", "/Freelancer/login").permitAll()
-                .requestMatchers("/Client/Registration", "/Freelancer/Registration").permitAll()
+                // Public endpoints
+                .requestMatchers("/api/public/**", "/error").permitAll()
+                
+                // Authentication endpoints 
+                .requestMatchers("/auth/**").permitAll()  // OAuth endpoints
+                .requestMatchers("/Client/login", "/Freelancer/login").permitAll() // Traditional login
+                .requestMatchers("/Client/Registration", "/Freelancer/Registration").permitAll() // Registration
                 .requestMatchers("/csrf").permitAll()  // CSRF token endpoint
+                
+                // Role-based access (works with both traditional and OAuth)
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/Client/**").hasAnyRole("CLIENT", "ADMIN") 
+                .requestMatchers("/Freelancer/**").hasAnyRole("FREELANCER", "ADMIN")
+                
+                // All other requests require authentication (either session or JWT)
                 .anyRequest().authenticated()
             )
             
-            // Disable default form login for API
+            // Disable default form login for API (OAuth/JWT based)
             .formLogin(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable);
 
@@ -77,20 +101,20 @@ public class SecurityConfig {
         // FIXED: Specific methods
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         
-        // FIXED: Specific headers including CSRF
+        // FIXED: Specific headers including CSRF and OAuth
         configuration.setAllowedHeaders(Arrays.asList(
-            "Authorization", 
+            "Authorization",         // JWT Bearer tokens
             "Content-Type", 
             "X-Requested-With",
-            "X-CSRF-TOKEN",          // CSRF token header
-            "X-XSRF-TOKEN"           // Alternative CSRF token header
+            "X-CSRF-TOKEN",          // CSRF token header - PRESERVED
+            "X-XSRF-TOKEN"           // Alternative CSRF token header - PRESERVED
         ));
         
-        // Allow credentials for CSRF cookies
+        // Allow credentials for CSRF cookies and OAuth
         configuration.setAllowCredentials(true);
         
-        // Expose CSRF token header
-        configuration.setExposedHeaders(Arrays.asList("X-CSRF-TOKEN"));
+        // Expose headers
+        configuration.setExposedHeaders(Arrays.asList("X-CSRF-TOKEN", "Authorization"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

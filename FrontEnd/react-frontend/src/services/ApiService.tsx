@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosR
 import { csrfService } from './CsrfService';
 
 class ApiService {
-    private axiosInstance: AxiosInstance;
+    public axiosInstance: AxiosInstance; // Make public for OAuth service access
 
     constructor() {
         this.axiosInstance = axios.create({
@@ -18,11 +18,14 @@ class ApiService {
     }
 
     private setupInterceptors(): void {
-        // Request interceptor to add CSRF token
+        // Request interceptor to add CSRF token and JWT token
         this.axiosInstance.interceptors.request.use(
             async (config: InternalAxiosRequestConfig) => {
-                // Add CSRF token for state-changing requests
-                if (['post', 'put', 'delete', 'patch'].includes(config.method?.toLowerCase() || '')) {
+                // Skip CSRF for OAuth endpoints
+                const isOAuthEndpoint = config.url?.startsWith('/auth/');
+                
+                // Add CSRF token for state-changing requests (except OAuth endpoints)
+                if (!isOAuthEndpoint && ['post', 'put', 'delete', 'patch'].includes(config.method?.toLowerCase() || '')) {
                     let csrfToken = csrfService.getCsrfToken();
                     
                     // Fetch CSRF token if not available
@@ -37,6 +40,13 @@ class ApiService {
                     }
                 }
                 
+                // Add JWT token if available (for OAuth authenticated requests)
+                const jwtToken = localStorage.getItem('accessToken');
+                if (jwtToken && !config.headers['Authorization']) {
+                    config.headers = config.headers || {};
+                    config.headers['Authorization'] = `Bearer ${jwtToken}`;
+                }
+                
                 return config;
             },
             (error) => {
@@ -44,7 +54,7 @@ class ApiService {
             }
         );
 
-        // Response interceptor to handle CSRF token updates
+        // Response interceptor to handle CSRF token updates and JWT token refresh
         this.axiosInstance.interceptors.response.use(
             (response: AxiosResponse) => {
                 // Update CSRF token if provided in response
@@ -57,8 +67,44 @@ class ApiService {
                 return response;
             },
             async (error) => {
-                // Handle CSRF token expiration (403 Forbidden)
-                if (error.response?.status === 403) {
+                const originalRequest = error.config;
+                
+                // Handle JWT token expiration (401 Unauthorized)
+                if (error.response?.status === 401 && !originalRequest._retry) {
+                    originalRequest._retry = true;
+                    
+                    // Try to refresh JWT token
+                    const refreshToken = localStorage.getItem('refreshToken');
+                    if (refreshToken) {
+                        try {
+                            // Call refresh endpoint
+                            const response = await axios.post('http://localhost:8082/auth/refresh', {
+                                refreshToken
+                            });
+                            
+                            if (response.data.token) {
+                                // Update tokens
+                                localStorage.setItem('accessToken', response.data.token);
+                                if (response.data.refreshToken) {
+                                    localStorage.setItem('refreshToken', response.data.refreshToken);
+                                }
+                                
+                                // Retry original request with new token
+                                originalRequest.headers['Authorization'] = `Bearer ${response.data.token}`;
+                                return this.axiosInstance.request(originalRequest);
+                            }
+                        } catch (refreshError) {
+                            // Refresh failed, redirect to login
+                            localStorage.removeItem('accessToken');
+                            localStorage.removeItem('refreshToken'); 
+                            localStorage.removeItem('user');
+                            window.location.href = '/login';
+                        }
+                    }
+                }
+                
+                // Handle CSRF token expiration (403 Forbidden) - preserve original functionality
+                if (error.response?.status === 403 && !error.config.url?.startsWith('/auth/')) {
                     // Try to refresh CSRF token and retry request
                     const newToken = await csrfService.fetchCsrfToken();
                     
@@ -74,7 +120,24 @@ class ApiService {
         );
     }
 
-    // Standard HTTP methods with CSRF protection
+    // OAuth-specific methods
+    setAuthToken(token: string): void {
+        this.axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        localStorage.setItem('accessToken', token);
+    }
+
+    clearAuthToken(): void {
+        delete this.axiosInstance.defaults.headers.common['Authorization'];
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
+    }
+
+    getAuthToken(): string | null {
+        return localStorage.getItem('accessToken');
+    }
+
+    // Standard HTTP methods with CSRF and JWT protection
     async get<T = any>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
         return this.axiosInstance.get(url, config);
     }
