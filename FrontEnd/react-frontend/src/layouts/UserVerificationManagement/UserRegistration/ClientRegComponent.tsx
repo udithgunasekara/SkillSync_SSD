@@ -36,11 +36,22 @@ const ClientRegComponent = () => {
         const { name, value } = e.target;
         let sanitizedInput = '';
 
-        // Input sanitization logic
+        // Input sanitization logic - FIXED: Stricter validation to prevent SQL injection
         if (name === 'firstName' || name === 'lastName') {
             sanitizedInput = value.replace(/[^a-zA-Z\s]/g, ''); // Allow only alphabetic characters and whitespace
         } else if (name === 'username') {
-                sanitizedInput = value.replace(/[^a-zA-Z_]/g, ''); // Allow only alphabetic characters and '_' no whitespaces
+                // FIXED: Only allow alphanumeric and underscore, no special characters
+                // Prevent SQL injection by limiting character set
+                sanitizedInput = value.replace(/[^a-zA-Z0-9_]/g, ''); // Allow only alphanumeric and underscore
+                sanitizedInput = sanitizedInput.slice(0, 50); // Limit length to prevent overflow attacks
+                // Validate against SQL keywords
+                const sqlKeywords = ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'DROP', 'UNION', 'OR', 'AND', 'EXEC', 'EXECUTE'];
+                const upperInput = sanitizedInput.toUpperCase();
+                if (sqlKeywords.some(keyword => upperInput.includes(keyword))) {
+                    setUsernameError('Username contains invalid characters');
+                    return;
+                }
+                setUsernameError('');
         }
         
         
@@ -72,6 +83,18 @@ const ClientRegComponent = () => {
         }
         else {
             sanitizedInput = value; // For other fields, no sanitization needed
+        }
+
+        // FIXED: Additional validation for password field to prevent SQL injection
+        if (name === 'password') {
+            // Ensure password doesn't contain SQL injection patterns
+            const sqlInjectionPatterns = [/(\bOR\b.*=.*)/gi, /(\bUNION\b)/gi, /(\bDROP\b)/gi, /(\bEXEC\b)/gi, /(--|;|\/\*|\*\/)/g];
+            if (sqlInjectionPatterns.some(pattern => pattern.test(value))) {
+                setPasswordError('Password contains invalid characters');
+                return;
+            }
+            sanitizedInput = value;
+            setPasswordError('');
         }
 
         //setFormData(prevState => ({ ...prevState, [name]: sanitizedInput }));
@@ -152,11 +175,29 @@ const ClientRegComponent = () => {
        //sending email
        OTPSending(email).then((response) => {
         console.log(response.data);
+       }).catch((error) => {
+        console.error('Error sending OTP:', error);
+        alert('Error sending OTP. Please try again.');
        });
 
        createClient(client).then((response) => {
           console.log(response.data);
           history.push('/OTPVerificationPage');
+       }).catch((error) => {
+          // FIXED: Proper error handling for backend exceptions
+          console.error('Registration error:', error);
+          
+          if (error.response) {
+              // Backend returned error response
+              const errorMessage = error.response.data?.message || error.response.data || error.response.statusText;
+              alert(`Registration failed: ${errorMessage}`);
+          } else if (error.request) {
+              // Request made but no response
+              alert('Error: No response from server. Please check your connection.');
+          } else {
+              // Other errors
+              alert(`Registration failed: ${error.message}`);
+          }
        });
     };
     return (

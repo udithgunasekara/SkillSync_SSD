@@ -42,12 +42,23 @@ public class ClientServiceImp implements ClientService {
 
     @Override
     public Long validateLogin(LoginDTO loginDTO) {
-        Client client = clientRepo.findByUserName(loginDTO.getUsername());
-        long userid = client.getId();
-        if (client != null && client.getPassword().equals(loginDTO.getPassword())) {
-            return userid;
+        // FIXED: Input validation to prevent SQL injection
+        String username = loginDTO.getUsername();
+        String password = loginDTO.getPassword();
+        
+        // Validate username - only allow alphanumeric and underscore
+        if (!username.matches("^[a-zA-Z0-9_]{3,50}$")) {
+            throw new IllegalArgumentException("Invalid username format");
         }
-        return null ;
+        
+        // Use parameterized query (JPA method) which is safe from SQL injection
+        Client client = clientRepo.findByUserName(username);
+        
+        // Always check if client exists before accessing properties
+        if (client != null && client.getPassword().equals(password)) {
+            return client.getId();
+        }
+        return null;
     }
 
     @Override

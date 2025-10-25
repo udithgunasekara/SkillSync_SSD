@@ -13,29 +13,37 @@ import java.util.List;
 
 @AllArgsConstructor
 @RestController
+@CrossOrigin
 @RequestMapping(path = "/Client")
 public class ClientController {
     private ClientService clientService;
 
-    //Client Registration
+    //FIXED: Client Registration with input validation
     @PostMapping("/Registration")
     public ResponseEntity<ClientDTO> createClient(@RequestBody ClientDTO clientDTO){
+        // Validate username format - prevent SQL injection
+        if (clientDTO.getUserName() == null || !clientDTO.getUserName().matches("^[a-zA-Z0-9_]{3,50}$")) {
+            throw new IllegalArgumentException("Invalid username format. Only alphanumeric characters and underscore allowed (3-50 characters)");
+        }
+        
         ClientDTO saveClient = clientService.createClient(clientDTO);
-
-        //can we make here a another service function for save usercredentials data (username, role, password))
         return new ResponseEntity<>(saveClient, HttpStatus.CREATED);
-
     }
 
-    //Client Login
+    //FIXED: Client Login with input validation to prevent SQL injection
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO) {
+        // Validate login credentials format
+        if (loginDTO.getUsername() == null || !loginDTO.getUsername().matches("^[a-zA-Z0-9_]{3,50}$")) {
+            throw new IllegalArgumentException("Invalid username format");
+        }
+        if (loginDTO.getPassword() == null || loginDTO.getPassword().isEmpty()) {
+            throw new IllegalArgumentException("Password cannot be empty");
+        }
+        
         Long id = clientService.validateLogin(loginDTO);
-        if (clientService.validateLogin(loginDTO)!=null) {
-            //return id of the user
-            //convert long id to string
+        if (id != null) {
             String idAsString = Long.toString(id);
-
             return ResponseEntity.ok(idAsString);
         }
         return ResponseEntity.status(401).body("Unauthorized");

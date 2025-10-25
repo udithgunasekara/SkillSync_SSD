@@ -19,6 +19,26 @@ export const ClientLoginComponent = () => {
     const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        // FIXED: Input validation to prevent SQL injection attacks
+        // Validate username format - only allow alphanumeric and underscore (3-50 chars)
+        if (!username.match(/^[a-zA-Z0-9_]{3,50}$/)) {
+            alert('Invalid username format. Use only letters, numbers, and underscore (3-50 characters)');
+            return;
+        }
+
+        // Validate password is not empty
+        if (password.length === 0) {
+            alert('Password cannot be empty');
+            return;
+        }
+
+        // Check for SQL injection patterns in password
+        const sqlInjectionPatterns = [/(\bOR\b.*=.*)/gi, /(\bUNION\b)/gi, /(\bDROP\b)/gi, /(\bEXEC\b)/gi, /(--|;|\/\*|\*\/)/g];
+        if (sqlInjectionPatterns.some(pattern => pattern.test(password))) {
+            alert('Password contains invalid characters');
+            return;
+        }
+
         // Including all state variables in the client object
         const client = { username, password };
         console.log(client); // For debug purposes
@@ -32,13 +52,32 @@ export const ClientLoginComponent = () => {
                 //add user name context
                 setFreelancerCon(username);
 
-
                 // alert('Login Successful!');
                 navigate.push(`/FreelancerMain`);
             })
             .catch((error) => {
-                console.error("Login error:", error.response || error);
-                alert('Login Failed!');
+                // FIXED: Proper error handling for backend exceptions
+                console.error("Login error:", error);
+                
+                if (error.response) {
+                    // Backend returned error response
+                    const status = error.response.status;
+                    const errorMessage = error.response.data?.message || error.response.data || error.response.statusText;
+                    
+                    if (status === 401) {
+                        alert('Login failed: Invalid username or password');
+                    } else if (status === 400) {
+                        alert(`Invalid input: ${errorMessage}`);
+                    } else {
+                        alert(`Login failed: ${errorMessage}`);
+                    }
+                } else if (error.request) {
+                    // Request made but no response
+                    alert('Error: No response from server. Please check your connection.');
+                } else {
+                    // Other errors
+                    alert(`Login failed: ${error.message}`);
+                }
             });
     };
 
