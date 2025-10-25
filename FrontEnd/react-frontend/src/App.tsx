@@ -77,6 +77,7 @@ import TestComponent from './layouts/ExamsManagment/Component/TestComponent';
 import SheduleInterviewComponent from './layouts/ExamsManagment/Component/SheduleInterviewComponent';
 import HomePage from './layouts/Home/HomePage';
 import AdminLoginComponent from './layouts/UserVerificationManagement/UserLogin/Components/AdminLoginPage';
+import OAuthSuccess from './layouts/UserVerificationManagement/UserLogin/Components/OAuthSuccess';
 import RegisterPager from './layouts/Home/RegisterPage';
 import { AdminNavbar } from './layouts/AdminTaskManagement/Admin/components/AdminNavbar';
 //import { FreelancerContext } from './layouts/UserVerificationManagement/Context/Context';
@@ -99,6 +100,9 @@ export const App = () => {
             <Route path="/HomePage">
               <Navbar />
               <HomePage />
+            </Route>
+            <Route path="/oauth/success" exact>
+              <OAuthSuccess />
             </Route>
             <Route path="/CreateGigForm1">
               <Navbar />

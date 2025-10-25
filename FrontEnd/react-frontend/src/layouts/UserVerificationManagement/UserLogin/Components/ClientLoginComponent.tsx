@@ -4,6 +4,7 @@ import { ClientLogin } from '../Service/LoginService';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import logo from './login.jpg';
 import FreelancerContext from '../../Context/Context';
+import GoogleSignInButton from './GoogleSignInButton';
 
 
 export const ClientLoginComponent = () => {
@@ -68,6 +69,18 @@ export const ClientLoginComponent = () => {
                             <button type="submit" className="btn mt-2 btn-primary btn-lg mx-3 rounded-pill">Login</button>
                         </div>
                     </form>
+                    
+                    {/* Divider */}
+                    <div className="my-4 text-center">
+                        <span style={{ color: '#fff', backgroundColor: 'rgba(0,0,0,0.3)', padding: '5px 15px', borderRadius: '15px' }}>
+                            or
+                        </span>
+                    </div>
+                    
+                    {/* Google Sign-In Button */}
+                    <div className="text-center">
+                        <GoogleSignInButton size="lg" variant="light" />
+                    </div>
                 </div>
             </div>
         </div>

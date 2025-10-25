@@ -13,8 +13,22 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/SkillSync_DB?createDatabaseIfNotExist=true
     username: root
-    password: root
+    password: Uq>)=5JWJaBw
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: "346352525912-hi7s0nhml1i2j8svc1tfg0md0mu3rm0v.apps.googleusercontent.com"
+            client-secret: "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"
+            scope:
+              - openid
+              - profile
+              - email
+            redirect-uri: "http://localhost:8082/login/oauth2/code/google"
+            client-name: Google
 
   mail:
     host: smtp.gmail.com
@@ -32,7 +46,7 @@ server:
   port: 8082
 
 paypal:
-  client-id: AVrdGThy9xERBOV2RPpdFx2mYYc2e2Z_tC98M_L6cKBPtG-WfDxkmkgyAfUrEEsMh7B-xHXg30YShcVA
-  client-secret: EF-F16KtR2f8nIi9di_WUFtbYPmGupQQfm68GuyGwNf4KuULatO2NEp1VBPrkh6K0zEwh2WAo5bGUFwZ
+  client-id: 650663071019-vcjmjevti5037ol1j00mvobrr6a01uni.apps.googleusercontent.com
+  client-secret: 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
   mode: sandbox #use sandbox for testing
 

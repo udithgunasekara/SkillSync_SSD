@@ -22,6 +22,13 @@ public class UserCredential {
     private String userName;
     private String password;
     private String role ;
+    
+    // OAuth2 specific fields
+    private String email;
+    private String fullName;
+    private String profilePicture;
+    private String provider; // google, facebook, etc.
+    private String providerId; // OAuth2 provider user ID
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
