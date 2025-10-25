@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
+import { apiService } from '../../../services/ApiService';
 import { Button, Card, Carousel, Container, Row, Col, Modal, Alert } from 'react-bootstrap';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { useHistory } from 'react-router-dom';
@@ -29,7 +30,7 @@ const FreelancerDashboard: React.FC = () => {
         const user = getUserInfo();
         setLoggedInUser(user);
 
-        const response = await axios.get<Gig[]>(`http://localhost:8082/freelancer-gigs/username/${user.username}`);
+        const response = await apiService.get<Gig[]>(`/freelancer-gigs/username/${user.username}`);
         const gigsWithIds = response.data.map((gig, index) => ({ ...gig, id: index + 1 }));
         setGigData(gigsWithIds);
         const minPricePromises = response.data.map(gig => fetchMinPrice(gig.gigId));
@@ -67,7 +68,7 @@ const FreelancerDashboard: React.FC = () => {
 
   const fetchMinPrice = async (gigId: number): Promise<string> => {
     try {
-      const response = await axios.get<string>(`http://localhost:8082/freelancer-gigs/${gigId}/gig-packages/min-price`);
+      const response = await apiService.get<string>(`/freelancer-gigs/${gigId}/gig-packages/min-price`);
       return response.data;
     } catch (error) {
       console.error(`Error fetching minimum price for gig ${gigId}:`, error);
@@ -77,7 +78,7 @@ const FreelancerDashboard: React.FC = () => {
 
   const fetchMinTime = async (gigId: number): Promise<string> => {
     try {
-      const response = await axios.get<string>(`http://localhost:8082/freelancer-gigs/${gigId}/gig-packages/min-time`);
+      const response = await apiService.get<string>(`/freelancer-gigs/${gigId}/gig-packages/min-time`);
       return response.data;
     } catch (error) {
       console.error(`Error fetching minimum time for gig ${gigId}:`, error);
@@ -88,9 +89,9 @@ const FreelancerDashboard: React.FC = () => {
   const confirmDelete = async () => {
     if (selectedGigId !== null) {
       try {
-        await axios.delete(`http://localhost:8082/freelancer-gigs/${selectedGigId}/gig-packages/del`);
-        await axios.delete(`http://localhost:8082/freelancer-gigs/${selectedGigId}/gig-images/delete`);
-        await axios.delete(`http://localhost:8082/freelancer-gigs/${selectedGigId}`);
+        await apiService.delete(`/freelancer-gigs/${selectedGigId}/gig-packages/del`);
+        await apiService.delete(`/freelancer-gigs/${selectedGigId}/gig-images/delete`);
+        await apiService.delete(`/freelancer-gigs/${selectedGigId}`);
         setGigData(gigData.filter(gig => gig.gigId !== selectedGigId));
         setSelectedGigId(null);
         setShowConfirmationModal(false);

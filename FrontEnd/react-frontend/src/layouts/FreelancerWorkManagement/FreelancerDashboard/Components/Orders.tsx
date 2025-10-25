@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { apiService } from '../../../../services/ApiService';
 import { Table, Button, Container } from 'react-bootstrap';
 import { Link, useHistory } from 'react-router-dom';
 
@@ -22,7 +23,7 @@ const Orders: React.FC = () => {
 
   const fetchOrders = async () => {
     try {
-      const response = await axios.get<Order[]>(`http://localhost:8082/orders`);
+      const response = await apiService.get<Order[]>(`/orders`);
       const filteredOrders = response.data.filter(order => order.orderFreelancerUsername === freelancerUsername);
       const ordersWithDefaultStatus = filteredOrders.map(order => ({
         ...order,
@@ -40,7 +41,7 @@ const Orders: React.FC = () => {
 
   const updateOrderStatus = async (orderId: number, newStatus: string) => {
     try {
-      await axios.put(`http://localhost:8082/orders/${orderId}/status?newStatus=${newStatus}`);
+      await apiService.put(`/orders/${orderId}/status?newStatus=${newStatus}`);
       fetchOrders();
     } catch (error) {
       console.error('Error updating order status:', error);

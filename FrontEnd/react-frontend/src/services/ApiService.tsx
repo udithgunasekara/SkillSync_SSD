@@ -20,20 +20,32 @@ class ApiService {
     private setupInterceptors(): void {
         // Request interceptor to add CSRF token
         this.axiosInstance.interceptors.request.use(
+<<<<<<< Updated upstream
             async (config: AxiosRequestConfig) => {
                 // Add CSRF token for state-changing requests
+=======
+            async (config: InternalAxiosRequestConfig) => {
+                // Add CSRF token for state-changing requests (except login)
+>>>>>>> Stashed changes
                 if (['post', 'put', 'delete', 'patch'].includes(config.method?.toLowerCase() || '')) {
-                    let csrfToken = csrfService.getCsrfToken();
+                    // SKIP CSRF for login endpoints (they are excluded from CSRF in backend)
+                    const url = config.url || '';
+                    const skipCsrfEndpoints = ['/Client/login', '/Freelancer/login', '/Admin/login', '/otp/request'];
+                    const shouldSkipCsrf = skipCsrfEndpoints.some(endpoint => url.includes(endpoint));
                     
-                    // Fetch CSRF token if not available
-                    if (!csrfToken) {
-                        csrfToken = await csrfService.fetchCsrfToken();
-                    }
-                    
-                    if (csrfToken) {
-                        const headerName = csrfService.getCsrfHeaderName();
-                        config.headers = config.headers || {};
-                        config.headers[headerName] = csrfToken;
+                    if (!shouldSkipCsrf) {
+                        let csrfToken = csrfService.getCsrfToken();
+                        
+                        // Fetch CSRF token if not available
+                        if (!csrfToken) {
+                            csrfToken = await csrfService.fetchCsrfToken();
+                        }
+                        
+                        if (csrfToken) {
+                            const headerName = csrfService.getCsrfHeaderName();
+                            config.headers = config.headers || {};
+                            config.headers[headerName] = csrfToken;
+                        }
                     }
                 }
                 

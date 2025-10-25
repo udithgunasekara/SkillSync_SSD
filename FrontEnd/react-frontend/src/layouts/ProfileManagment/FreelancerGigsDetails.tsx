@@ -1,6 +1,7 @@
 import React, { useState, useEffect, FormEvent } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import { apiService } from '../../services/ApiService';
 import { MDBIcon, MDBBtn, MDBSpinner } from 'mdb-react-ui-kit';
 import {
   MDBCard,
@@ -27,7 +28,7 @@ const FreelancerGigsDetails: React.FC = () => {
 
   const handleSearch = async () => {
     try {
-      const response = await axios.post(`http://localhost:8082/freelancer-gigs/search/${username}`, { keyword });
+      const response = await apiService.post(`/freelancer-gigs/search/${username}`, { keyword });
       setGigs(response.data);
       setLoading(false);
     } catch (error) {
@@ -38,12 +39,8 @@ const FreelancerGigsDetails: React.FC = () => {
   useEffect(() => {
     const fetchGigsByUsername = async () => {
       try {
-        const response = await fetch(`http://localhost:8082/freelancer-gigs/username/${username}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch gigs');
-        }
-        const data = await response.json();
-        setGigs(data);
+        const response = await apiService.get(`/freelancer-gigs/username/${username}`);
+        setGigs(response.data);
         setLoading(false);
       } catch (error) {
         console.error(error);

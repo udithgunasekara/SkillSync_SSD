@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import { apiService } from '../../services/ApiService';
 import { MDBIcon } from 'mdb-react-ui-kit';
 import './Freelancerreview.css'
 
@@ -18,9 +19,9 @@ const Freelancerreview: React.FC = () => {
     useEffect(() => {
         const fetchRatings = async () => {
             try {
-                const useridResponse = await axios.get(`http://localhost:8082/User/${username}/${role}`);
+                const useridResponse = await apiService.get(`/User/${username}/${role}`);
                 const userid: string = useridResponse.data.userId;
-                const response = await axios.get<Rating[]>(`http://localhost:8082/api/ratings/user/${userid}`);
+                const response = await apiService.get<Rating[]>(`/api/ratings/user/${userid}`);
                 setRatings(response.data);
             } catch (error) {
                 console.error('Error fetching ratings:', error);

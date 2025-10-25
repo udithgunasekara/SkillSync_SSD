@@ -54,6 +54,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/public/**", "/Client/login", "/Freelancer/login").permitAll()
                 .requestMatchers("/Client/Registration", "/Freelancer/Registration").permitAll()
                 .requestMatchers("/csrf").permitAll()  // CSRF token endpoint
+                .requestMatchers("/Freelancer/checkAccountStatus/**").permitAll()  // Check account status (called after login)
+                .requestMatchers("/otp/request", "/otp/verify").permitAll()  // OTP endpoints
                 .anyRequest().authenticated()
             )
             

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { apiService } from '../../services/ApiService';
 import './ConversationForm.css';
 
 interface Conversation {
@@ -22,15 +23,15 @@ const ConversationForm: React.FC = () => {
   useEffect(() => {
     const fetchConversation = async () => {
       try {
-        const response = await axios.get<Conversation>(
-          `http://localhost:8082/api/conversations/${registeruser}/${username}`
+        const response = await apiService.get<Conversation>(
+          `/api/conversations/${registeruser}/${username}`
         );
         if (response.data) {
           setConversation(response.data);
         } else {
           try {
-            const response1 = await axios.get<Conversation>(
-              `http://localhost:8082/api/conversations/${username}/${registeruser}`
+            const response1 = await apiService.get<Conversation>(
+              `/api/conversations/${username}/${registeruser}`
             );
             setConversation1(response1.data);
           } catch (error) {
@@ -54,7 +55,7 @@ const ConversationForm: React.FC = () => {
       window.location.href = `http://localhost:3000/Message/${user1}/${user2}/${conversations1.conversationId}`;
     } else {
       try {
-        const response = await axios.post('http://localhost:8082/api/conversations', {
+        const response = await apiService.post('/api/conversations', {
           user1,
           user2,
           startedAt,

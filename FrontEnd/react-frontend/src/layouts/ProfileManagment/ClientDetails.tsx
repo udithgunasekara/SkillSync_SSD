@@ -1,6 +1,7 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import { apiService } from '../../services/ApiService';
 import ConversationForm from './Conversation';
 import { MDBIcon } from 'mdb-react-ui-kit';
 import './ClientDetails.css';
@@ -38,7 +39,7 @@ const ClientDetails: React.FC = () => {
 
   const fetchImage = async () => {
     try {
-      const response = await axios.get(`http://localhost:8082/api/images/${username}`, {
+      const response = await apiService.get(`/api/images/${username}`, {
         responseType: 'blob', 
       });
       if (response.data) {
@@ -58,20 +59,20 @@ const ClientDetails: React.FC = () => {
   useEffect(() => {
     const fetchClientDetails = async () => {
       try {
-        const clientResponse = await axios.get<Client>(`http://localhost:8082/clients/${username}`);
+        const clientResponse = await apiService.get<Client>(`/clients/${username}`);
         setClient(clientResponse.data);
 
-        const languagesResponse = await axios.get<Language[]>(`http://localhost:8082/client/language/${username}`);
+        const languagesResponse = await apiService.get<Language[]>(`/client/language/${username}`);
         setLanguages(languagesResponse.data);
 
-        const descriptionResponse = await axios.get<{ description: string }>(`http://localhost:8082/Client/Description/${username}`);
+        const descriptionResponse = await apiService.get<{ description: string }>(`/Client/Description/${username}`);
         if(descriptionResponse.data){
           setDescription(descriptionResponse.data.description);
         } else {
           setDescription(null);
         }
 
-        const freelancerResponse = await axios.get<Client>(`http://localhost:8082/freelancers/${username}`);
+        const freelancerResponse = await apiService.get<Client>(`/freelancers/${username}`);
         setFreelancer(freelancerResponse.data);
 
         setLoading(false);
@@ -106,7 +107,7 @@ const ClientDetails: React.FC = () => {
     formData.append('file', file);
   
     try {
-      await axios.post(`http://localhost:8082/api/images/upload/${username}`, formData, {
+      await apiService.post(`/api/images/upload/${username}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -138,7 +139,7 @@ const ClientDetails: React.FC = () => {
   const handlelangSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.post(`http://localhost:8082/client/language`, {username: username, language: languages[0]?.language});
+      await apiService.post(`/client/language`, {username: username, language: languages[0]?.language});
       alert('Language added successfully');
       window.location.reload();
     } catch (error) {
@@ -200,7 +201,7 @@ const ClientDetails: React.FC = () => {
 
   const handleDeleteLanguage = async (language: string) => {
     try {
-      await axios.delete(`http://localhost:8082/client/language/language/${username}/${language}`);
+      await apiService.delete(`/client/language/language/${username}/${language}`);
       setLanguages(prevLanguages => prevLanguages.filter(lang => lang.language !== language));
       alert('Language deleted successfully.');
       window.location.reload();

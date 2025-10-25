@@ -1,6 +1,7 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import { apiService } from '../../services/ApiService';
 import ConversationForm from './Conversation';
 import FreelancerGigsDetails from './FreelancerGigsDetails';
 import Freelancerreview from './Freelancerreview';
@@ -104,7 +105,7 @@ const FreelancerDetails: React.FC = () => {
 
   const fetchImage = async () => {
     try {
-      const response = await axios.get(`http://localhost:8082/api/images/${username}`, {
+      const response = await apiService.get(`/api/images/${username}`, {
         responseType: 'blob', 
       });
       if (response.data) {
@@ -149,26 +150,26 @@ const FreelancerDetails: React.FC = () => {
   useEffect(() => {
     const fetchFreelancerDetails = async () => {
       try {
-        const response = await axios.get<Freelancer>(`http://localhost:8082/freelancers/${username}`);
+        const response = await apiService.get<Freelancer>(`/freelancers/${username}`);
         setFreelancer(response.data);
 
-        const languagesResponse = await axios.get<Language[]>(`http://localhost:8082/Freelancer/language/${username}`);
+        const languagesResponse = await apiService.get<Language[]>(`/Freelancer/language/${username}`);
         setLanguages(languagesResponse.data);
 
-        const descriptionResponse = await axios.get<{ description: string }>(`http://localhost:8082/Freelancer/Description/${username}`);
+        const descriptionResponse = await apiService.get<{ description: string }>(`/Freelancer/Description/${username}`);
         if(descriptionResponse.data){
           setDescription(descriptionResponse.data.description);
         } else {
           setDescription(null);
         }
 
-        const skillResponse = await axios.get<Skill[]>(`http://localhost:8082/freelancer/skills/${username}/getall`);
+        const skillResponse = await apiService.get<Skill[]>(`/freelancer/skills/${username}/getall`);
         setSkills(skillResponse.data);
 
-        const educationResponse = await axios.get<Education[]>(`http://localhost:8082/freelancer/education/${username}/get`);
+        const educationResponse = await apiService.get<Education[]>(`/freelancer/education/${username}/get`);
         setEducation(educationResponse.data);
 
-        const clientResponse = await axios.get<Client>(`http://localhost:8082/clients/${username}`);
+        const clientResponse = await apiService.get<Client>(`/clients/${username}`);
         setClient(clientResponse.data);
 
         setLoading(false); // Set loading to false after data fetching is done
@@ -204,7 +205,7 @@ const FreelancerDetails: React.FC = () => {
     formData.append('file', file);
   
     try {
-      await axios.post(`http://localhost:8082/api/images/upload/${username}`, formData, {
+      await apiService.post(`/api/images/upload/${username}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -281,7 +282,7 @@ const FreelancerDetails: React.FC = () => {
 
   const handleDeleteLanguage = async (language: string) => {
     try {
-      await axios.delete(`http://localhost:8082/Freelancer/language/${username}/${language}`);
+      await apiService.delete(`/Freelancer/language/${username}/${language}`);
       setLanguages(prevLanguages => prevLanguages.filter(lang => lang.language !== language));
       alert('Language deleted successfully.');
       window.location.reload();
@@ -293,7 +294,7 @@ const FreelancerDetails: React.FC = () => {
 
   const handleDeleteSkill = async (skill: string) => {
     try {
-      await axios.delete(`http://localhost:8082/freelancer/skills/${username}/${skill}`);
+      await apiService.delete(`/freelancer/skills/${username}/${skill}`);
       setSkills(prevSkills => prevSkills.filter(sk => sk.skill !== skill));
       alert('Skill deleted successfully.');
       window.location.reload();
@@ -305,7 +306,7 @@ const FreelancerDetails: React.FC = () => {
 
   const handleDeleteEducation = async (eduid: number) => {
     try {
-      await axios.delete(`http://localhost:8082/freelancer/education/${username}/${eduid}`);
+      await apiService.delete(`/freelancer/education/${username}/${eduid}`);
       setEducation(prevEducation => prevEducation.filter(edu => edu.id !== eduid));
       alert('Education deleted successfully.');
     } catch (error) {
@@ -318,18 +319,12 @@ const FreelancerDetails: React.FC = () => {
     e.preventDefault();
     
     try {
-      const response = await fetch(`http://localhost:8082/Freelancer/Description/${username}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: username,
-          description: description
-      }),
+      const response = await apiService.post(`/Freelancer/Description/${username}`, {
+        username: username,
+        description: description
       });
       
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         window.location.reload();
       } else {
         throw new Error('Failed to update description');
@@ -362,7 +357,7 @@ const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
       return;
     }
     try {
-      const response = await axios.post<any>(`http://localhost:8082/freelancer/skills/`, {
+      const response = await apiService.post<any>(`/freelancer/skills/`, {
         username: username,
         skill: skill.trim()
       });
@@ -380,7 +375,7 @@ const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
       return;
     }
     try {
-      await axios.post<any>(`http://localhost:8082/Freelancer/language`, {username: username, language: language.trim()});
+      await apiService.post<any>(`/Freelancer/language`, {username: username, language: language.trim()});
       alert('Language added successfully');
       window.location.reload();
     } catch (error) {
