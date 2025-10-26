@@ -6,6 +6,7 @@ import { MDBBadge} from 'mdb-react-ui-kit';
 import 'mdb-react-ui-kit/dist/css/mdb.min.css';
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { SecurityUtils } from '../../utils/SecurityUtils';
+import DOMPurify from 'dompurify';
 
 interface InboxMessage {
   user2: string;
@@ -108,7 +109,15 @@ function Inbox() {
                     <img src={defaultImageUrl} alt="Default Profile" style={{ maxWidth: '100%' }} className='profile-image-inbox' />
                   )}
                   <h3 className='inbox-user-name'>@{SecurityUtils.encodeURLParam(message.user2)}</h3> 
-                  <p className='latest-msg'>{message.message}</p>
+                  <p className='latest-msg' 
+                     dangerouslySetInnerHTML={{
+                       __html: DOMPurify.sanitize(message.message, {
+                         ALLOWED_TAGS: [],
+                         ALLOWED_ATTR: [],
+                         KEEP_CONTENT: true
+                       })
+                     }}
+                  />
                 
                 </div>
               </a>

@@ -1,46 +1,46 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: ${DB_DDL_AUTO:update}
+    show-sql: ${DB_SHOW_SQL:true}
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+        dialect: ${DB_DIALECT:org.hibernate.dialect.MySQLDialect}
   servlet:
     multipart:
-      max-file-size: 100MB
-      max-request-size: 100MB
+      max-file-size: ${UPLOAD_MAX_FILE_SIZE:100MB}
+      max-request-size: ${UPLOAD_MAX_REQUEST_SIZE:100MB}
+      file-size-threshold: ${UPLOAD_FILE_SIZE_THRESHOLD:1MB}
+      location: ${UPLOAD_LOCATION:/tmp}
+      enabled: ${UPLOAD_ENABLED:true}
   datasource:
-    url: jdbc:mysql://localhost:3306/SkillSync_DB?createDatabaseIfNotExist=true
-    username: root
-    password: root
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
+    url: ${DB_URL:jdbc:mysql://localhost:3306/SkillSync_DB?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+    driver-class-name: ${DB_DRIVER:com.mysql.cj.jdbc.Driver}
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: supeshalau@gmail.com
-    password: heuiezkwclhbdvkd
+    host: ${SMTP_HOST:smtp.gmail.com}
+    port: ${SMTP_PORT:587}
+    username: ${SMTP_USERNAME:supeshalau@gmail.com}
+    password: ${SMTP_PASSWORD:heuiezkwclhbdvkd}
     properties:
       mail:
         smtp:
-          auth: true
+          auth: ${SMTP_AUTH:true}
           starttls:
-            enable: true
+            enable: ${SMTP_STARTTLS:true}
 
-# FIXED: Secure session configuration
 server:
-  port: 8082
+  port: ${SERVER_PORT:8082}
   servlet:
     session:
       cookie:
-        secure: false  # Set to true in production with HTTPS
-        http-only: true
-        same-site: strict
-        max-age: 1800  # 30 minutes
+        secure: ${SESSION_COOKIE_SECURE:false}
+        http-only: ${SESSION_COOKIE_HTTP_ONLY:true}
+        same-site: ${SESSION_COOKIE_SAME_SITE:strict}
+        max-age: ${SESSION_TIMEOUT:1800}
 
 paypal:
-  client-id: AVrdGThy9xERBOV2RPpdFx2mYYc2e2Z_tC98M_L6cKBPtG-WfDxkmkgyAfUrEEsMh7B-xHXg30YShcVA
-  client-secret: EF-F16KtR2f8nIi9di_WUFtbYPmGupQQfm68GuyGwNf4KuULatO2NEp1VBPrkh6K0zEwh2WAo5bGUFwZ
-  mode: sandbox #use sandbox for testing
-
+  client-id: ${PAYPAL_CLIENT_ID:AVrdGThy9xERBOV2RPpdFx2mYYc2e2Z_tC98M_L6cKBPtG-WfDxkmkgyAfUrEEsMh7B-xHXg30YShcVA}
+  client-secret: ${PAYPAL_CLIENT_SECRET:EF-F16KtR2f8nIi9di_WUFtbYPmGupQQfm68GuyGwNf4KuULatO2NEP1VBPrkh6K0zEwh2WAo5bGUFwZ}
+  mode: ${PAYPAL_MODE:sandbox}

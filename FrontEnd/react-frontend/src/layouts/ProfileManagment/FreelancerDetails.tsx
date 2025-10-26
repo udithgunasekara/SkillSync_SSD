@@ -10,6 +10,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import './FreelancerDetails.css';
 import { listExams } from '../ExamsManagment/service/ExamsService';
 import { SecurityUtils } from '../../utils/SecurityUtils';
+import DOMPurify from 'dompurify';
 import { getUserResultByUserName } from '../ExamsManagment/service/UserResultService';
 
 
@@ -469,12 +470,12 @@ const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
       )}
     </div>
     
-    <p className='username'><b>@{freelancer.userName}</b></p>
+    <p className='username'><b>@{DOMPurify.sanitize(freelancer.userName, { ALLOWED_TAGS: [], ALLOWED_ATTR: [], KEEP_CONTENT: true })}</b></p>
       <div className='detail-card'>
       
-      <p>Name: {freelancer.firstName} {freelancer.lastName}</p>
+      <p>Name: {DOMPurify.sanitize(freelancer.firstName, { ALLOWED_TAGS: [], ALLOWED_ATTR: [], KEEP_CONTENT: true })} {DOMPurify.sanitize(freelancer.lastName, { ALLOWED_TAGS: [], ALLOWED_ATTR: [], KEEP_CONTENT: true })}</p>
       <hr/>
-      <p>level: {freelancer.level}    {(registeruser===username) && (<button className='exam-apply-profile' onClick={handleApplyExam}>apply exam</button>)}</p>
+      <p>level: {DOMPurify.sanitize(freelancer.level, { ALLOWED_TAGS: [], ALLOWED_ATTR: [], KEEP_CONTENT: true })}    {(registeruser===username) && (<button className='exam-apply-profile' onClick={handleApplyExam}>apply exam</button>)}</p>
       <p className='detail-div-1'>Country: {client?.country}</p>
       <p className='detail-div-2'>Registered Date: {monthName} {year}</p>
 
@@ -555,7 +556,7 @@ const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     {languages && languages.length > 0 ? (
       languages.map((language, index) => (
         <span id='lang-list-free' key={language.id || index}>
-          {language.language}{'   '}
+          {DOMPurify.sanitize(language.language, { ALLOWED_TAGS: [], ALLOWED_ATTR: [], KEEP_CONTENT: true })}{'   '}
           {(registeruser===username) && (<button onClick={() => handleDeleteLanguage(language.language)} className='Delete-language'>
             <MDBIcon fas icon="trash-alt" />
           </button>)}
@@ -597,7 +598,7 @@ const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
 {skills && skills.length > 0 ? (
 skills.map((skill, index) => ( 
   <span id='skill-free-list' key={skill.id || index}>
-    {skill.skill} {(registeruser===username) && (<button onClick={() => handleDeleteSkill(skill.skill)} className='delete-skill'><MDBIcon fas icon="trash-alt" /></button>)}
+    {DOMPurify.sanitize(skill.skill, { ALLOWED_TAGS: [], ALLOWED_ATTR: [], KEEP_CONTENT: true })} {(registeruser===username) && (<button onClick={() => handleDeleteSkill(skill.skill)} className='delete-skill'><MDBIcon fas icon="trash-alt" /></button>)}
   </span>
 ))
 ) : (

@@ -1,6 +1,8 @@
 package BackEnd.controller;
 
 import BackEnd.service.GigImageService;
+import BackEnd.Config.FileUploadValidator;
+import BackEnd.Config.FileUploadValidator.ValidationResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,12 +23,40 @@ public class GigImageController {
     @Autowired
     private GigImageService gigImageService;
 
+    @Autowired
+    private FileUploadValidator fileUploadValidator;
+
     @PostMapping("/upload")
     public ResponseEntity<List<String>> uploadGigImages(@PathVariable Long gigId,
                                                         @RequestParam("image") List<MultipartFile> files) {
+        
+        // Validate gig ID
+        if (gigId == null || gigId <= 0) {
+            return ResponseEntity.badRequest().body(List.of("Invalid gig ID provided"));
+        }
+
+        // Limit number of files that can be uploaded at once (prevent resource exhaustion)
+        if (files.size() > 10) {
+            return ResponseEntity.badRequest().body(List.of("Maximum 10 images can be uploaded at once"));
+        }
+
         List<String> uploadResults = files.stream()
                 .map(file -> {
-                    return gigImageService.uploadGigImages(gigId, file);
+                    try {
+                        // Validate each file
+                        ValidationResult validationResult = fileUploadValidator.validateImageFile(file);
+                        if (!validationResult.isValid()) {
+                            return "File validation failed for " + file.getOriginalFilename() + ": " + validationResult.getMessage();
+                        }
+
+                        // Process the upload with sanitized filename
+                        String sanitizedFilename = fileUploadValidator.sanitizeFilename(file.getOriginalFilename());
+                        String result = gigImageService.uploadGigImages(gigId, file);
+                        
+                        return "Successfully uploaded: " + sanitizedFilename;
+                    } catch (Exception e) {
+                        return "Upload failed for " + file.getOriginalFilename() + ": " + e.getMessage();
+                    }
                 })
                 .collect(Collectors.toList());
 

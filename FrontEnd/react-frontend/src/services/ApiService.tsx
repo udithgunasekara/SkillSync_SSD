@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 import { csrfService } from './CsrfService';
 
 class ApiService {
@@ -6,8 +6,9 @@ class ApiService {
 
     constructor() {
         this.axiosInstance = axios.create({
-            baseURL: 'http://localhost:8082',
+            baseURL: process.env.REACT_APP_API_BASE_URL || 'http://localhost:8082',
             withCredentials: true,  // Include cookies for CSRF
+            timeout: 10000, // 10 second timeout
             headers: {
                 'Content-Type': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest'  // Custom header for CSRF protection
@@ -20,19 +21,22 @@ class ApiService {
     private setupInterceptors(): void {
         // Request interceptor to add CSRF token
         this.axiosInstance.interceptors.request.use(
-            async (config: AxiosRequestConfig) => {
+            async (config: InternalAxiosRequestConfig) => {
                 // Add CSRF token for state-changing requests
                 if (['post', 'put', 'delete', 'patch'].includes(config.method?.toLowerCase() || '')) {
                     let csrfToken = csrfService.getCsrfToken();
                     
                     // Fetch CSRF token if not available
                     if (!csrfToken) {
-                        csrfToken = await csrfService.fetchCsrfToken();
+                        try {
+                            csrfToken = await csrfService.fetchCsrfToken();
+                        } catch (error) {
+                            console.warn('Failed to fetch CSRF token:', error);
+                        }
                     }
                     
-                    if (csrfToken) {
+                    if (csrfToken && config.headers) {
                         const headerName = csrfService.getCsrfHeaderName();
-                        config.headers = config.headers || {};
                         config.headers[headerName] = csrfToken;
                     }
                 }
@@ -48,7 +52,7 @@ class ApiService {
         this.axiosInstance.interceptors.response.use(
             (response: AxiosResponse) => {
                 // Update CSRF token if provided in response
-                if (response.data.csrfToken) {
+                if (response.data?.csrfToken) {
                     csrfService.setCsrfToken(
                         response.data.csrfToken, 
                         response.data.csrfHeaderName
@@ -59,13 +63,17 @@ class ApiService {
             async (error) => {
                 // Handle CSRF token expiration (403 Forbidden)
                 if (error.response?.status === 403) {
-                    // Try to refresh CSRF token and retry request
-                    const newToken = await csrfService.fetchCsrfToken();
-                    
-                    if (newToken && error.config) {
-                        const headerName = csrfService.getCsrfHeaderName();
-                        error.config.headers[headerName] = newToken;
-                        return this.axiosInstance.request(error.config);
+                    try {
+                        // Try to refresh CSRF token and retry request
+                        const newToken = await csrfService.fetchCsrfToken();
+                        
+                        if (newToken && error.config) {
+                            const headerName = csrfService.getCsrfHeaderName();
+                            error.config.headers[headerName] = newToken;
+                            return this.axiosInstance.request(error.config);
+                        }
+                    } catch (retryError) {
+                        console.error('Failed to retry request with new CSRF token:', retryError);
                     }
                 }
                 
@@ -74,21 +82,25 @@ class ApiService {
         );
     }
 
-    // Standard HTTP methods with CSRF protection
-    async get(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse> {
-        return this.axiosInstance.get(url, config);
+    // Generic HTTP methods with proper TypeScript support
+    async get<T = any>(url: string, config?: any): Promise<AxiosResponse<T>> {
+        return this.axiosInstance.get<T>(url, config);
     }
 
-    async post(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse> {
-        return this.axiosInstance.post(url, data, config);
+    async post<T = any>(url: string, data?: any, config?: any): Promise<AxiosResponse<T>> {
+        return this.axiosInstance.post<T>(url, data, config);
     }
 
-    async put(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse> {
-        return this.axiosInstance.put(url, data, config);
+    async put<T = any>(url: string, data?: any, config?: any): Promise<AxiosResponse<T>> {
+        return this.axiosInstance.put<T>(url, data, config);
     }
 
-    async delete(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse> {
-        return this.axiosInstance.delete(url, config);
+    async delete<T = any>(url: string, config?: any): Promise<AxiosResponse<T>> {
+        return this.axiosInstance.delete<T>(url, config);
+    }
+
+    async patch<T = any>(url: string, data?: any, config?: any): Promise<AxiosResponse<T>> {
+        return this.axiosInstance.patch<T>(url, data, config);
     }
 
     // Get the axios instance for advanced usage

@@ -28,7 +28,7 @@ export const createQualification = (qualifications: any) =>
     apiService.post(REST_API_QUALIFICATION, qualifications);
 
 export const getRejectedQualifications = (username: string) => 
-    apiService.get<string[]>(`${REST_API_REJECTED_QUALIFICATIONS}${username}`);
+    apiService.get(`${REST_API_REJECTED_QUALIFICATIONS}${username}`);
 
 export const reUploadQualification = (username: string, title: string, formData: FormData) =>
     apiService.put(`${REST_API_QUALIFICATION_UPLOAD}`, formData, {
@@ -43,4 +43,4 @@ export const OTPVerify = (otp: string, email: string) =>
     apiService.post(REST_API_OTP_VERIFY, { otp, email });
 
 export const checkAccountStatus = (username: string) => 
-    apiService.get<boolean>(`${REST_API_CHECK_ACCOUNT_STATUS}/${username}`);
+    apiService.get(`${REST_API_CHECK_ACCOUNT_STATUS}/${username}`);
